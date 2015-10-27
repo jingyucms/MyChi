@@ -26,3 +26,13 @@
 *.exe
 *.out
 *.app
+
+# Emacs
+*~
+
+# ignore all files in the tmp/ directory
+tmp/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]

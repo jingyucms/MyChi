@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import os
 
 
-PtBins={"Pt_170to300":9999.,
+PtBins={"Pt_170to300":117276.0,
         "Pt_300to470":7823.0,
         "Pt_470to600":648.2,
         "Pt_600to800":186.9,

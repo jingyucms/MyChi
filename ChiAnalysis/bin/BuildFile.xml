@@ -12,4 +12,5 @@
 <use   name="CondFormats/JetMETObjects"/>
 <environment>
   <bin   file="GenChiAnalysis.cc"></bin>
+  <bin   file="ChiNtuple.cc"></bin>  
 </environment>

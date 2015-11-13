@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
 
   bool Debug_=false;
   // now get each parameter
-  const edm::ParameterSet& ana = process.getParameter<edm::ParameterSet>("chiAnalyzer");
+  const edm::ParameterSet& ana = process.getParameter<edm::ParameterSet>("GenChiAnalysis");
   edm::InputTag GenJetCollection_( ana.getParameter<edm::InputTag>("GenJets") );
   double XS_( ana.getParameter<double>("CrossSection") );
   string SMEARING_( ana.getParameter<string>("Smearing") );
@@ -120,7 +120,6 @@ int main(int argc, char* argv[])
   bool sysPlus_( ana.getParameter<bool>("sysPlus") );
   // book a set of histograms
   string outFile=outputHandler_.file().c_str();
-  outFile = "root://eoscms//eos/cms/store/caf/user/apana/Chi/" + outFile ;
   cout << "Output written to: " << outFile << endl;
   fwlite::TFileService fs = fwlite::TFileService(outFile);
   TFileDirectory dir = fs.mkdir("chiAnalysis");
@@ -650,7 +649,7 @@ int main(int argc, char* argv[])
     // this has to be done twice to stop the file loop as well
     if(maxEvents_>0 ? ievt+1>maxEvents_ : false) break;
   }
-  std::cout << "FWLITEChiAnalysis finished normally" << std::endl;
+  std::cout << "GenChiAnalysis finished normally" << std::endl;
   return 0;
 }
 

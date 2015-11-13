@@ -1,38 +1,30 @@
 import FWCore.ParameterSet.Config as cms
 import os
-NEVT=-1
-
-mass="AAAA"
-XSECTION=BBBB
-# mass="2500"
-# mass="3700"
+NEVT=100
 
 ## SMEARING="Gaussian"
 SMEARING="CrystalBall"
-smearMax=CCCC
+smearMax=2.5
 
-## Generator="pythia8"
-Generator="DDDD"
+Generator="pythia8"
+XSECTION=1.
 
 DOSYS=False
 ## DOSYS=True
 SysPlus=False
 
-IFILE="XXXX"
-## FileList="filelists/QCD_"+Generator+"_m" + mass + "/filelist_"+IFILE+".list"
-FileList="filelists/"+Generator+"_m" + mass + "_50000__Oct1" + "/filelist_"+IFILE+".list"
+FileList="genfiles_" +Generator+ ".list"
 
 print FileList
 infiles = [line.strip() for line in open(FileList, 'r')]
 
-OutDir=os.path.join('GenOutput_13TeV',Generator+"_"+SMEARING)
+OutDir=os.path.join('root://eoscms//eos/cms/store/caf/user/apana/Chi/GenOutput_13TeV',Generator+"_"+SMEARING)
+
 if SMEARING == "CrystalBall":
     OutDir=OutDir +"_Trunc" + str(smearMax)
 
-## OutDir=os.path.join(OutDir,'_m'+mass)
 
-OutFile=os.path.join(OutDir,'chiSmearing_8TeV_m' +mass)
-# OutFile='GenOutput_new/chiSmearing_8TeV_'+ Generator +'_m'+mass+'_'+SMEARING
+OutFile=os.path.join(OutDir,'chiSmearing_13TeV')
 if SMEARING == "Gaussian":
     if DOSYS:
         if SysPlus:
@@ -41,12 +33,14 @@ if SMEARING == "Gaussian":
             OutFile=OutFile + "_SysMinus"
 elif SMEARING == "CrystalBall":
     pass
-    # OutFile=OutFile + "_Trunc" + str(smearMax)
 else:
     print "Undefined smearing"
     OutFile="XXX"
 
-OutFile=OutFile + "_" + IFILE + ".root"
+OutFile=OutFile + ".root"
+
+#####################################################################################################
+
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
@@ -61,10 +55,9 @@ process.fwliteInput = cms.PSet(
 process.fwliteOutput = cms.PSet(
     ## fileName  = cms.string('analyzeChi_14TeV_m'+massCut+'inf_CI20TEV.root'),  ## mandatory
     fileName  = cms.string(OutFile),  ## mandatory
-    # fileName  = cms.string('analyzeChi_8TeV_ci_90.root'),  ## mandatory
 )
 
-process.chiAnalyzer = cms.PSet(
+process.GenChiAnalysis = cms.PSet(
     ## input specific for this analyzer
     GenJets = cms.InputTag('ak4GenJets'),
     Smearing = cms.string(SMEARING),

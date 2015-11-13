@@ -16,7 +16,7 @@ then
 fi
 cfgfile=$1
 logfile=$2
-
+jobnum=$3
 
 echo
 echo "************************************************"
@@ -28,8 +28,8 @@ echo "LOG: " $logfile
 echo
 
 
-echo bsub -q ${QUEUE} -oo ${logfile} ${SUB_SCRIPT} ${cfgfile}
-# bsub -q ${QUEUE} -oo ${logfile} ${SUB_SCRIPT} ${cfgfile}
+echo bsub -q ${QUEUE} -oo ${logfile} ${SUB_SCRIPT} ${cfgfile} ${jobnum}
+bsub -q ${QUEUE} -oo ${logfile} ${SUB_SCRIPT} ${cfgfile} ${jobnum}
 
 }
 ######################################################################################

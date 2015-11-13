@@ -333,7 +333,7 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   m_HistNames[hname] =  Book1dHist(hname, htitle, 5, -1.5, 3.5, false );
 
   hname="evtsM"; htitle="Number of Events per Mass Bin";
-  m_HistNames[hname] =  Book1dHist(hname, htitle, 5, -1.5, 3.5, false );
+  m_HistNames[hname] =  Book1dHist(hname, htitle, 11, -1.5, 9.5, false );
 
   hname="evtsPT"; htitle="Number of Events per PT Bin";
   m_HistNames[hname] =  Book1dHist(hname, htitle, 11, -1.5, 9.5, false );

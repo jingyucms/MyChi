@@ -166,6 +166,8 @@ int main(int argc, char* argv[])
   hname="evtsPT"; htitle="Number of Events per PT Bin";
   m_HistNames[hname] =  Book1dHist(hname, htitle, 11, -1.5, 9.5, false );
 
+  hname="evtsM"; htitle="Number of Events per Mass Bin";
+  m_HistNames[hname] =  Book1dHist(hname, htitle, 11, -1.5, 9.5, false );
 
   hname="nGenJet"; htitle="Number of GenJets";
   m_HistNames[hname] =  Book1dHist(hname, htitle, 10, -0.5, 9.5, false );
@@ -184,6 +186,7 @@ int main(int argc, char* argv[])
   Int_t IsData;
   Int_t HTBin(-1);
   Int_t PTBin(-1);
+  Int_t MBin(-1);  
 
   _outTree = new TTree("DijetTree", "");
   
@@ -194,6 +197,7 @@ int main(int argc, char* argv[])
   _outTree->Branch("Lumi",  &Lumi ,  "Lumi/I");
   _outTree->Branch("IsData",  &IsData ,  "IsData/I");
   _outTree->Branch("HTBin",  &HTBin ,  "HTBin/I");
+  _outTree->Branch("MBin",   &MBin ,   "MBin/I");  
   _outTree->Branch("PTBin",  &PTBin ,  "PTBin/I");
 
   _outTree->Branch("recoDijets", &recoDijets, "dijetFlag/I:mass/F:pt/F:chi/F:yboost/F:pt1/F:eta1/F:phi1/F:e1/F:pt2/F:eta2/F:phi2/F:e2/F");
@@ -261,26 +265,26 @@ int main(int argc, char* argv[])
       // ----------------------------------------------------------------------
 
 
-      std::vector<string> htBins, ptBins;
+      std::vector<string> htBins, ptBins, mBins;
       htBins.push_back("100To250");
       htBins.push_back("250To500");
       htBins.push_back("500To1000");
       htBins.push_back("1000ToInf");
 
 
-      //ptBins.push_back("m900_1400");
-      //ptBins.push_back("m1400_2500");
-      //ptBins.push_back("m2500_3700");
-      //ptBins.push_back("m3700_8000");
+      ptBins.push_back("m900_1400");
+      ptBins.push_back("m1400_2500");
+      ptBins.push_back("m2500_3700");
+      ptBins.push_back("m3700_8000");
 
-      ptBins.push_back("m1000_1500");
-      ptBins.push_back("m1500_1900");
-      ptBins.push_back("m1900_2400");
-      ptBins.push_back("m2400_2800");
-      ptBins.push_back("m2800_3300");
-      ptBins.push_back("m3300_3800");
-      ptBins.push_back("m3800_4300");
-      ptBins.push_back("m4300_13000");
+      mBins.push_back("m1000_1500");
+      mBins.push_back("m1500_1900");
+      mBins.push_back("m1900_2400");
+      mBins.push_back("m2400_2800");
+      mBins.push_back("m2800_3300");
+      mBins.push_back("m3300_3800");
+      mBins.push_back("m3800_4300");
+      mBins.push_back("m4300_13000");
 
       int htBin=-1;
       for (uint i=0; i<htBins.size(); ++ i){
@@ -292,7 +296,7 @@ int main(int argc, char* argv[])
 	}
       }
       if (htBin==-1){
-	std::cout << "HT Bin not found in output file name"  << std::endl;
+	std::cout << "HT Bin not found in input file name"  << std::endl;
       }
       HTBin=htBin;
 
@@ -307,12 +311,25 @@ int main(int argc, char* argv[])
 	}
       }
       if (ptBin==-1){
-	std::cout << "PT Bin not found in output file name"  << std::endl;
+	std::cout << "PT Bin not found in input file name"  << std::endl;
       }
       PTBin=ptBin;
 
 
-
+      int mBin=-1;
+      for (uint i=0; i<mBins.size(); ++ i){
+	string stringToFind= mBins.at(i) ;
+	std::size_t found = inputFile.find(stringToFind);
+	if (found != std::string::npos){
+	  mBin=i;
+	  break;
+	}
+      }
+      if (mBin==-1){
+	std::cout << "Mass Bin not found in input file name"  << std::endl;
+      }
+      MBin=mBin;
+  
 
       fwlite::Event ev(inFile);
 
@@ -346,7 +363,8 @@ int main(int argc, char* argv[])
 
 	fillHist("evtsHT",float(HTBin),1.);
 	fillHist("evtsPT",float(PTBin),1.);
-
+	fillHist("evtsM",float(MBin),1.);
+	
 	XSweight=XS_;
 	EVTweight=1.;
 	Event=1.;

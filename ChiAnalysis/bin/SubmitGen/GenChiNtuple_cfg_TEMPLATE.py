@@ -18,7 +18,7 @@ DOSYS=False
 SysPlus=False
 
 IFILE="XXXX"
-FileList="filelists/"+Generator+"_m" + mass + "_50000__Oct1" + "/filelist_"+IFILE+".list"
+FileList="filelists/"+Generator+ "_50000__Oct1" + "/m" + mass +  "/fileList_"+IFILE+".txt"
 
 print FileList
 infiles = [line.strip() for line in open(FileList, 'r')]

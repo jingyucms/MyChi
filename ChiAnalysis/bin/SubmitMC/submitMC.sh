@@ -1,6 +1,7 @@
 #!/bin/sh
 
-QUEUE=1nd
+## QUEUE=1nd
+QUEUE=8nm
 SUB_SCRIPT=toBatchCHI.sh
 
 #####################################################################################
@@ -35,18 +36,19 @@ bsub -q ${QUEUE} -oo ${logfile} ${SUB_SCRIPT} ${cfgfile} ${jobnum}
 ######################################################################################
 
 theDate=`date '+%Y%m%d'`
-logDir=logs_${theDate}
+logDir=logs_GS_${theDate}
 if [[ ! -e $logDir ]]; then
    mkdir $logDir
 fi
 
 cp ../ChiNtuple.cc ../ChiNtuple.h $logDir
 
-for a in {0..10}
-	 # for a in 0
+# for a in {0..9}
+for a in 0
 do
-    config=chiNtuple_cfg.py
-    logfile=$logDir/chiCFG_data_${a}.log
+    config=chiNtuples_MC_cfg.py
+    logfile=${logDir}/chiCFG_MC_${a}_GS_test.log
+    ## logfile=${logDir}/chiCFG_MC_${a}_CB_fullstat.log    
     
     echo $config $logfile $a
     Submit $config $logfile ${a}

@@ -25,6 +25,8 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 
+#include "MyChi/ChiAnalysis/interface/MyJetResponse.h"
+
 TRandom rnd;
 
 std::map<TString, TH1*> m_HistNames;
@@ -115,6 +117,8 @@ int main(int argc, char* argv[])
   edm::InputTag GenJetCollection_( ana.getParameter<edm::InputTag>("GenJets") );
   double XS_( ana.getParameter<double>("CrossSection") );
   string SMEARING_( ana.getParameter<string>("Smearing") );
+  bool doAK4_sf( ana.getParameter<bool>("AK4_SF") );
+  bool doDataToMC_sf( ana.getParameter<bool>("DATAtoMC_SF") );  
   double smearMax_( ana.getParameter<double>("SmearMax") );
   bool doSys_( ana.getParameter<bool>("doSys") );
   bool sysPlus_( ana.getParameter<bool>("sysPlus") );
@@ -123,6 +127,8 @@ int main(int argc, char* argv[])
   cout << "Output written to: " << outFile << endl;
   fwlite::TFileService fs = fwlite::TFileService(outFile);
   TFileDirectory dir = fs.mkdir("chiAnalysis");
+
+  if (SMEARING_ == "Gaussian") smearMax_=100.;
 
   TString hname,htitle;
   TH1::SetDefaultSumw2();
@@ -205,22 +211,25 @@ int main(int argc, char* argv[])
   _outTree->Branch("smrDijets",  &smrDijets , "dijetFlag/I:mass/F:pt/F:chi/F:yboost/F:pt1/F:eta1/F:phi1/F:e1/F:pt2/F:eta2/F:phi2/F:e2/F");
 
   // ccla Setup the smearing
-  bool     doPTSmearing(false);
+  bool     doPTSmearing(true); // set to false to smear in eta & phi (I don't think this option works correctly presently)
 
   string   era("Spring10");
   string   alg("AK5PF");
-  // bool     doGaussian(false);
-  bool     doGaussian(true);
+  bool     doGaussian(false); // set to true only if you want to do Gaussian smearing using the JetResolution TF1 setup instead of Crystall ball smearing
 
   cout<<"era:           "<<era<<endl;
   cout<<"alg:           "<<alg<<endl;
-  cout<<"Smearing:      "<<SMEARING_<<endl<<endl;
+  cout<<"Smearing:      "<<SMEARING_<<endl;
+  cout<<"DoSys:         "<<doSys_ << "\tSysPlus: " << sysPlus_<<endl;
+  cout<<"AK4_sf:        "<<doAK4_sf<<endl;
+  cout<<"DataToMC_sf:   "<<doDataToMC_sf<<endl<<endl;  
   cout<<"Cross Section: "<<XS_<<endl<<endl;
 
   
   string cmssw_base(getenv("CMSSW_BASE"));
   string cmssw_release_base(getenv("CMSSW_RELEASE_BASE"));
-  string path = cmssw_release_base + "/src/CondFormats/JetMETObjects/data";
+  //string path = cmssw_release_base + "/src/CondFormats/JetMETObjects/data";
+  string path = cmssw_base + "/src/CondFormats/JetMETObjects/data";
 
   string ptFileName  = path + "/" + era + "_PtResolution_" +alg+".txt";
   string etaFileName = path + "/" + era + "_EtaResolution_"+alg+".txt";
@@ -235,7 +244,20 @@ int main(int argc, char* argv[])
   JetResolution etaResol(etaFileName,doGaussian);
   JetResolution phiResol(phiFileName,doGaussian);
 
-  TF1 *fPtResol, *fetaResol, *fphiResol;
+  // TF1 *fPtResol;
+  TF1 *fetaResol, *fphiResol;
+
+  int doSysErr(0);
+  if (doSys_){
+    if (sysPlus_){
+      doSysErr=1;
+    }else{
+      doSysErr=-1;
+    }
+  }
+  MyJetResponse jetresponse(doAK4_sf,doDataToMC_sf,doSysErr);  
+  jetresponse.GetResolutionParameters(ptFileName,doGaussian);
+  
   // CCLA done with smearing setup
 
   std::vector<double>	smrjet_energy(0,0);
@@ -465,22 +487,30 @@ int main(int argc, char* argv[])
 	      if (doPTSmearing){
 	      
 		if (SMEARING_ == "Gaussian"){
-		  fact=SmearFactor(genpt,std::abs(geneta),doSys_,sysPlus_);  // Suvadeep's Gaussian smearing 
+		  //fact=SmearFactor(genpt,std::abs(geneta),doSys_,sysPlus_);  // Suvadeep's Gaussian smearing
+		  fact=jetresponse.doGaussianSmearing(genpt,geneta);
+		  // std::cout <<  genpt << "\t" << geneta << "\t" << fact << std::endl;
 		}else if (SMEARING_ == "CrystalBall"){
 		  fact=10.;
 		  if (smearMax_ >= fact) fact = smearMax_+1.;
 		  int nloop=0;
 		  while (fact>smearMax_){
-		    fPtResol  = ptResol.resolutionEtaPt(geneta,genpt);
-		    fact = fPtResol ->GetRandom();
+		    //fPtResol  = ptResol.resolutionEtaPt(geneta,genpt);
+		    //fact = fPtResol ->GetRandom();
+		    fact=jetresponse.doCrystalBallSmearing(genpt,geneta);		    
 		    nloop++;
 		    if (nloop>10) break;
 		  }
+		  if (fact>smearMax_) {
+		    std::cout << "%%Too large smearing factor: " << fact << " genpt=  " << genpt << std::endl;
+		    // revert to simple guaussian smearing
+		    fact=1.;
+		    std::cout << "\tReverting to gaussian smearing. Factor= " << fact << std::endl;
+		  }		  
 		}else{
 		  std::cout << "Undefined Smearing -- " << SMEARING_ << " -- Exiting program" << std::endl;
 		  return 1;
 		}
-
 
 	      }else{
 		fetaResol  = etaResol.resolutionEtaPt(geneta,genpt);

@@ -9,6 +9,8 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+#include <cassert>
+#include <time.h>
 
 #include <TROOT.h>
 #include <TSystem.h>
@@ -25,6 +27,7 @@
 #include <TH3D.h>
 #include <TH3F.h>
 #include <TLorentzVector.h>
+#include <TMath.h>
 #include "TRandom.h"
 
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
@@ -32,6 +35,8 @@
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
+
+#include "MyChi/ChiAnalysis/interface/MyJetResponse.h"
 
 // #include <TCanvas.h>
 
@@ -103,12 +108,15 @@ public:
   void SetSmrMax(const double &);
   void SetIsData(const bool &);
   void SetDoGaussian(const bool &);
-  void SetNevents(const int &);  
+  void SetNevents(const int &);
+  void SetDoSysErr(const int &);
+  void SetAK4_SF(const bool &);
+  void SetDataToMC_SF(const bool &);
   vector <TLorentzVector> sortJets(const vector<TLorentzVector>);
   int findLeading(const std::vector<double> );
   int findNextLeading(const std::vector<double>, const uint);
   void Loop();
-
+  
   string outName;
   TFile *outFile;
   TH1F *myHist;
@@ -135,7 +143,8 @@ private :
   float xsweight;
   float SmrMax;
   int   Nevts;
-  bool  doGaussian;  
+  bool  doGaussian, doAK4_sf, doDataToMC_sf;
+  int   doSysErr;
   bool  CheckFirstFile();
   bool  OpenInputFiles();
   bool  OpenNtupleList(const std::string & fname);
@@ -143,14 +152,20 @@ private :
   Long64_t nentries_;
   TFile* rf;
 
-  std::vector<double> massBins;  
-  std::vector<double> chiBins;
+  std::vector<double> massBins1;
+  std::vector<double> massBins2;
+  
+  std::vector<double> chiBins1;
   std::vector<double> chiBins2;
   std::vector<double> chiBins3;
   std::vector<double> chiBins4;
   std::vector<TH1F*> hists;
+  std::vector<TH1F*> ghists;
+  std::vector<TH1F*> shists;  
   std::vector<TH1F*> mhists;
-  TH2F *dijet_m_chi_0,*dijet_m_chi_1,*dijet_m_chi_2,*dijet_m_chi_3,*dijet_m_chi_4;
+  //TH2F *dijet_m_chi_0,*dijet_m_chi_1,*dijet_m_chi_2,*dijet_m_chi_3,*dijet_m_chi_4;
+  TH2F *dijet_mass1_chi1,*dijet_mass1_chi2,*dijet_mass1_chi3,*dijet_mass1_chi4;
+  TH2F *dijet_mass2_chi1,*dijet_mass2_chi2,*dijet_mass2_chi3,*dijet_mass2_chi4;
   
   TString hname,htitle;
   TObjArray* Hlist;  
@@ -172,9 +187,9 @@ private :
   TH2F* Book2dHist(const char*, const char*, Int_t, Double_t, Double_t, Int_t , Double_t , Double_t ,bool);
   TH3F* Book3dHist(const char*, const char*, Int_t, Double_t, Double_t, Int_t , Double_t , Double_t ,Int_t , Double_t , Double_t ,bool );
 
-  double SmearFactor(double,double);
-  double SmearFunc(double, double, double, double, double);
-
+  double SmearFactor(double,double, double);
+  double SmearFunc(double, double, double, double, double, double);
+  double TriggerEff(double, double);
   TRandom rnd;  
 };
 
@@ -185,12 +200,17 @@ ChiNtuple::~ChiNtuple(){
 
 bool ChiNtuple::OpenInputFiles()
 {
+  std::string commentLine ("#");
+  
   fChain     = new TChain("ntuplizer/tree");
 
   for (unsigned int i=0;i<listNtuples.size();i++)
   {
-    std::cout << " -- Adding to chain: " << listNtuples[i] << std::endl;
-    fChain->Add(listNtuples[i].c_str());
+    string ntuple=listNtuples[i];
+    if (ntuple.at(0) != commentLine){
+      std::cout << " -- Adding to chain: " << ntuple << std::endl;
+      fChain->Add(ntuple.c_str());
+    }
   }
 
   return true;
@@ -268,6 +288,22 @@ void ChiNtuple::SetDoGaussian(const bool & doG){
   
 }
 
+void ChiNtuple::SetDoSysErr(const int & sys){
+  doSysErr=sys;  
+}
+
+void ChiNtuple::SetAK4_SF(const bool & doak4){
+  doAK4_sf=false;
+  if (doak4)doAK4_sf=true;
+  
+}
+
+void ChiNtuple::SetDataToMC_SF(const bool & doData){
+  doDataToMC_sf=false;
+  if (doData)doDataToMC_sf=true;
+  
+}
+
 void ChiNtuple::SetNevents(const int & nev){
   Nevts=nev;  
 }
@@ -304,7 +340,10 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   outName=fname;
   
   std::cout << "Output written to: " << outName << std::endl;
-  outFile = new TFile(outName.c_str(),"recreate");
+  //outFile = new TFile::Open(outName.c_str(),"recreate");
+  outFile = TFile::Open(outName.c_str(),"recreate");
+  //outFile = new TFile();
+  //outFile->Open(outName.c_str(),"recreate");
   outFile->cd();
   
   //myHist = new TH1F("h1","pt",100,0,1100);
@@ -317,6 +356,9 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   hname="dijet_mass"; htitle="M_{jj}";
   m_HistNames[hname] =  Book1dHist(hname,htitle,nMass,minMass,maxMass, true);
 
+  hname="dijet_mass_trg"; htitle="M_{jj} w/ Trigger Eff";
+  m_HistNames[hname] =  Book1dHist(hname,htitle,nMass,minMass,maxMass, true);
+  
   hname="dijet_mass_gen"; htitle="M_{jj} Generated";  
   m_HistNames[hname] =  Book1dHist(hname,htitle,nMass,minMass,maxMass, true);
 
@@ -348,20 +390,26 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   hname="Resp"; htitle="Jet Response -- 300 < p_{T} Gen < 400,  |y| < 1.";
   m_HistNames[hname] =  Book1dHist(hname, htitle, njr, jrmin, jrmax, true );
 
-  hname="SmrResp"; htitle="Smeared Jet Response -- 300 < p_{T} Gen < 300, |y| < 1." ;
+  hname="SmrResp"; htitle="Smeared Jet Response -- 300 < p_{T} Gen < 400, |y| < 1." ;
   m_HistNames[hname] =  Book1dHist(hname, htitle, njr, jrmin, jrmax, true );
 
+  hname="SmrResp2"; htitle="Smeared Jet Response -- 600 < p_{T} Gen < 800, |y| > 2." ;
+  m_HistNames[hname] =  Book1dHist(hname, htitle, njr, jrmin, jrmax, true );
+  
   hname="Resp3D"; htitle="Jet response vs pt,y";
   m_HistNames3D[hname]=Book3dHist(hname, htitle, 200, 0. ,2000., neta, etamin, etamax, njr, jrmin, jrmax, true);
 
   hname="SmrResp3D"; htitle="Smeared Jet response vs pt,y";
   m_HistNames3D[hname]=Book3dHist(hname, htitle, 200, 0. ,2000., neta, etamin, etamax, njr, jrmin, jrmax, true);
 
-  Float_t mbins[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,13000};
-  Int_t  nmbins = sizeof(mbins)/sizeof(Float_t) - 1;
+  Float_t mbins1[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,13000};
+  Int_t  nmbins1 = sizeof(mbins1)/sizeof(Float_t) - 1;
 
-  Float_t chibins[] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-  Int_t  nchibins = sizeof(chibins)/sizeof(Float_t) - 1;
+  Float_t mbins2[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,5400,6000,8000,10000,13000};
+  Int_t  nmbins2 = sizeof(mbins2)/sizeof(Float_t) - 1;
+  
+  Float_t chibins1[] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+  Int_t  nchibins1 = sizeof(chibins1)/sizeof(Float_t) - 1;
 
   Float_t chibins2[] = { 1,2,3,4,5,6,7,8,9,10,12,14,16};
   Int_t  nchibins2 = sizeof(chibins2)/sizeof(Float_t) - 1;
@@ -372,11 +420,14 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   Float_t chibins4[] = { 1,3,5,7,10,12,14,16};
   Int_t  nchibins4 = sizeof(chibins4)/sizeof(Float_t) - 1;
 
-  for ( Int_t j = 0; j < (nmbins+1); ++j )
-    massBins.push_back(mbins[j]);
+  for ( Int_t j = 0; j < (nmbins1+1); ++j )
+    massBins1.push_back(mbins1[j]);
 
-  for ( Int_t j = 0; j < (nchibins+1); ++j )
-    chiBins.push_back(chibins[j]);
+  for ( Int_t j = 0; j < (nmbins2+1); ++j )
+    massBins2.push_back(mbins2[j]);
+  
+  for ( Int_t j = 0; j < (nchibins1+1); ++j )
+    chiBins1.push_back(chibins1[j]);
 
   for ( Int_t j = 0; j < (nchibins2+1); ++j )
     chiBins2.push_back(chibins2[j]);
@@ -387,40 +438,68 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   for ( Int_t j = 0; j < (nchibins4+1); ++j )
     chiBins4.push_back(chibins4[j]);
 
-  dijet_m_chi_0 = new TH2F("dijet_m_chi_0","M_{jj} vs #chi",70,1000.,8000.,15,1.,16.);
-  dijet_m_chi_1 = new TH2F("dijet_m_chi_1","M_{jj} vs #chi",nmbins,mbins,nchibins,chibins);
-  dijet_m_chi_2 = new TH2F("dijet_m_chi_2","M_{jj} vs #chi",nmbins,mbins,nchibins2,chibins2);
-  dijet_m_chi_3 = new TH2F("dijet_m_chi_3","M_{jj} vs #chi",nmbins,mbins,nchibins3,chibins3);
-  dijet_m_chi_4 = new TH2F("dijet_m_chi_4","M_{jj} vs #chi",nmbins,mbins,nchibins4,chibins4);  
+  
+  dijet_mass1_chi1 = new TH2F("dijet_mass1_chi1","M_{jj} vs #chi",nmbins1,mbins1,nchibins1,chibins1);
+  dijet_mass1_chi2 = new TH2F("dijet_mass1_chi2","M_{jj} vs #chi",nmbins1,mbins1,nchibins2,chibins2);
+  dijet_mass1_chi3 = new TH2F("dijet_mass1_chi3","M_{jj} vs #chi",nmbins1,mbins1,nchibins3,chibins3);
+  dijet_mass1_chi4 = new TH2F("dijet_mass1_chi4","M_{jj} vs #chi",nmbins1,mbins1,nchibins4,chibins4);  
 
-  dijet_m_chi_0->Sumw2();
-  dijet_m_chi_1->Sumw2();
-  dijet_m_chi_2->Sumw2();
-  dijet_m_chi_3->Sumw2();
-  dijet_m_chi_4->Sumw2();
+  dijet_mass2_chi1 = new TH2F("dijet_mass2_chi1","M_{jj} vs #chi",nmbins2,mbins2,nchibins1,chibins1);
+  dijet_mass2_chi2 = new TH2F("dijet_mass2_chi2","M_{jj} vs #chi",nmbins2,mbins2,nchibins2,chibins2);
+  dijet_mass2_chi3 = new TH2F("dijet_mass2_chi3","M_{jj} vs #chi",nmbins2,mbins2,nchibins3,chibins3);
+  dijet_mass2_chi4 = new TH2F("dijet_mass2_chi4","M_{jj} vs #chi",nmbins2,mbins2,nchibins4,chibins4);  
 
-  Hlist->Add(dijet_m_chi_0);        
-  Hlist->Add(dijet_m_chi_1);        
-  Hlist->Add(dijet_m_chi_2);        
-  Hlist->Add(dijet_m_chi_3);        
-  Hlist->Add(dijet_m_chi_4);        
+  
+  dijet_mass1_chi1->Sumw2();
+  dijet_mass1_chi2->Sumw2();
+  dijet_mass1_chi3->Sumw2();
+  dijet_mass1_chi4->Sumw2();
+ 
+  dijet_mass2_chi1->Sumw2();
+  dijet_mass2_chi2->Sumw2();
+  dijet_mass2_chi3->Sumw2();
+  dijet_mass2_chi4->Sumw2();
+ 
+  Hlist->Add(dijet_mass1_chi1);        
+  Hlist->Add(dijet_mass1_chi2);        
+  Hlist->Add(dijet_mass1_chi3);        
+  Hlist->Add(dijet_mass1_chi4);
+  
+  Hlist->Add(dijet_mass2_chi1);        
+  Hlist->Add(dijet_mass2_chi2);        
+  Hlist->Add(dijet_mass2_chi3);        
+  Hlist->Add(dijet_mass2_chi4);        
 
-  for ( size_t j = 0; j < (massBins.size()-1); ++j )
+  for ( size_t j = 0; j < (massBins1.size()-1); ++j )
   {
       std::stringstream name;
-      name << "dijet_" << massBins[j] << "_" << massBins[j+1] << "_" << "chi";
+      name << "dijet_" << massBins1[j] << "_" << massBins1[j+1] << "_" << "chi";
       hists.push_back(new TH1F(name.str().c_str(),name.str().c_str(),15,1,16));
       hists[j]->Sumw2();
-      Hlist->Add(hists[j]);      
+      Hlist->Add(hists[j]);
+
+      if (!IsData){
+	std::stringstream gname;
+	gname << "dijet_" << massBins1[j] << "_" << massBins1[j+1] << "_" << "chi_gen";
+	ghists.push_back(new TH1F(gname.str().c_str(),gname.str().c_str(),15,1,16));
+	ghists[j]->Sumw2();
+	Hlist->Add(ghists[j]);
+
+	std::stringstream sname;	
+	sname << "dijet_" << massBins1[j] << "_" << massBins1[j+1] << "_" << "chi_smr";
+	shists.push_back(new TH1F(sname.str().c_str(),sname.str().c_str(),15,1,16));
+	shists[j]->Sumw2();
+	Hlist->Add(shists[j]);
+      }
   }
 
-  for ( size_t j = 0; j < (chiBins.size()-1); ++j )
+  for ( size_t j = 0; j < (chiBins1.size()-1); ++j )
   {
       std::stringstream name;
-      name << "dijet_" << chiBins[j] << "_chi_" << chiBins[j+1] << "_" << "mass";
-      mhists.push_back(new TH1F(name.str().c_str(),name.str().c_str(),nmbins,mbins));
+      name << "dijet_" << chiBins1[j] << "_chi1_" << chiBins1[j+1] << "_" << "mass1";
+      mhists.push_back(new TH1F(name.str().c_str(),name.str().c_str(),nmbins1,mbins1));
       mhists[j]->Sumw2();
-      Hlist->Add(mhists[j]);      
+      Hlist->Add(mhists[j]);
   }
 
   
@@ -447,7 +526,7 @@ void ChiNtuple::WriteHistograms(){
 
   outFile->cd();
   Hlist->Write();
-  outFile->Close();  
+  outFile->Close();
 }
 
 void ChiNtuple::fillHist(const TString& histName, const Double_t& value, const Double_t& wt) {
@@ -504,12 +583,59 @@ TH3F* ChiNtuple::Book3dHist(const char* name, const char* title, Int_t nbinsx, D
   return h;
 }
 
-double ChiNtuple::SmearFunc(double mean, double eta, double p0, double p1, double p2){
-  double sigma=0;
+double ChiNtuple::TriggerEff(double mass, double chi){
+  double eff=1.; 
+  if (!IsData) return eff;
+  if (mass<1000.) return eff;
+  
+  double par[] { 0, 0., 0. }; 
+  if ( chi <= 2){
+    par[0] = 1.0;
+    par[1] = 796.928610698;
+    par[2] = 77.1506076781;
+  }else if ( chi <= 4){
+    par[0] = 1.0;
+    par[1] = 886.176274484;
+    par[2] = 119.74926938;
+  }else if ( chi <= 6){
+    par[0] = 1.0;
+    par[1] = 1034.43359036;
+    par[2] = 129.769721544;
+  }else if ( chi <= 10){
+    par[0] = 1.0;
+    par[1] = 1221.16044494;
+    par[2] = 176.482231463;
+  }else if ( chi <= 12){
+    par[0] = 1.0;
+    par[1] = 1393.81742045;
+    par[2] = 174.130748889;
+  }else if ( chi <= 14){
+    par[0] = 1.0;
+    par[1] = 1508.70366162;
+    par[2] = 169.303061065;
+  }else if ( chi <= 16){
+    par[0] = 1.0;
+    par[1] = 1590.72609729;
+    par[2] = 203.28102181;
+  }
 
-  bool addSmear=true;
+  double xx=mass;
+  if (xx<1500.) xx=1500.;
+  
+  eff=par[0]/2.+par[0]/2.*TMath::Erf((xx-par[1])/par[2]);
+  return eff;
+  
+}
+
+double ChiNtuple::SmearFunc(double mean, double eta, double p0, double p1, double p2,double sf){
+  double sigma=0;
+  
+  bool addSmear=true; // additional data/mc smearing
 
   sigma = mean*(sqrt(pow(p0,2)+pow((p1/sqrt(mean)),2)+pow((p2/mean),2)));
+
+  sigma=sigma*sf; // sf is additional scale factor for ak4/ak5 differences
+
   double errPlus=1.;
   double errMinus=1.;
 
@@ -540,7 +666,7 @@ double ChiNtuple::SmearFunc(double mean, double eta, double p0, double p1, doubl
       errMinus=1.-sqrt(0.127*0.127+0.153*0.153);
     }
   }
-
+  
   bool doSys = false;
   if (doSys){
     bool errplus =true;
@@ -557,29 +683,29 @@ double ChiNtuple::SmearFunc(double mean, double eta, double p0, double p1, doubl
   return r/mean; 
 }
 
-double ChiNtuple::SmearFactor(double pt,double eta){
+double ChiNtuple::SmearFactor(double pt,double eta, double scaleFactor){
 
+  double sf=scaleFactor;
   double smf_e=1.;
   if (eta < 0.5) {
-    smf_e   = SmearFunc(pt,eta,2.87265e-02,1.01485e+00,5.25613e+00);
+    smf_e   = SmearFunc(pt,eta,2.87265e-02,1.01485e+00,5.25613e+00,sf);
   } 
   else if (eta < 1.0) {
-    smf_e   = SmearFunc(pt,eta,3.43555e-02,9.49218e-01,5.92528e+00);
+    smf_e   = SmearFunc(pt,eta,3.43555e-02,9.49218e-01,5.92528e+00,sf);
   } 
   else if (eta < 1.5) {
-    smf_e   = SmearFunc(pt,eta,3.95103e-02,1.00204e+00,6.07558e+00);
+    smf_e   = SmearFunc(pt,eta,3.95103e-02,1.00204e+00,6.07558e+00,sf);
   }
   else if (eta < 2.0) {
-    smf_e   = SmearFunc(pt,eta,1.42866e-02,8.48049e-01,6.67823e+00);
+    smf_e   = SmearFunc(pt,eta,1.42866e-02,8.48049e-01,6.67823e+00,sf);
   }
   else if (eta < 2.5) {
-    smf_e   = SmearFunc(pt,eta,1.34450e-02,7.14309e-01,6.77620e+00);
+    smf_e   = SmearFunc(pt,eta,1.34450e-02,7.14309e-01,6.77620e+00,sf);
   }
   else if (eta < 3.0) {
-    smf_e   = SmearFunc(pt,eta,2.08877e-07,8.59187e-01,6.84957e+00);
-  }
-
+    smf_e   = SmearFunc(pt,eta,2.08877e-07,8.59187e-01,6.84957e+00,sf);
+  }  
   return smf_e;
 }
-
+ 
 #endif

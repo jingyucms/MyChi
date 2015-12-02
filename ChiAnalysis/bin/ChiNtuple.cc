@@ -7,15 +7,19 @@ void ChiNtuple::Loop(){
   string   era("Spring10");
   string   alg("AK5PF");
 
-  cout<<"era:      "<<era<<endl;
-  cout<<"alg:      "<<alg<<endl;
-  cout<<"gaussian: "<<doGaussian<<endl;
-  cout<<"isData: "<<IsData<<endl<<endl<<endl;  
+  cout<<"era:         "<<era<<endl;
+  cout<<"alg:         "<<alg<<endl;
+  cout<<"gaussian:    "<<doGaussian<<endl;
+  cout<<"AK4_sf:      "<<doAK4_sf<<endl;
+  cout<<"DataToMC_sf: "<<doDataToMC_sf<<endl;
+  cout<<"SysErr:      "<<doSysErr<<endl;
+  cout<<"isData:      "<<IsData<<endl<<endl<<endl;  
 
   
   string cmssw_base(getenv("CMSSW_BASE"));
   string cmssw_release_base(getenv("CMSSW_RELEASE_BASE"));
-  string path = cmssw_release_base + "/src/CondFormats/JetMETObjects/data";
+  // string path = cmssw_release_base + "/src/CondFormats/JetMETObjects/data";
+  string path = cmssw_base + "/src/CondFormats/JetMETObjects/data";
   // struct stat st;
   // if (stat(path.c_str(),&st)!=0)
   //   path = cmssw_release_base + "/src/CondFormats/JetMETObjects/data";
@@ -35,8 +39,11 @@ void ChiNtuple::Loop(){
   JetResolution ptResol(ptFileName,doGaussian);
   //JetResolution etaResol(etaFileName,doGaussian);
   //JetResolution phiResol(phiFileName,doGaussian);
-  TF1 *fPtResol;  
+  //TF1 *fPtResol;  
+  MyJetResponse jetresponse(doAK4_sf,doDataToMC_sf,doSysErr);
   
+  jetresponse.GetResolutionParameters(ptFileName,doGaussian);
+    
   int                             jetAK4_N             ;
   std::vector<float>              *jetAK4_pt=0         ;
   std::vector<float>              *jetAK4_eta=0         ;
@@ -328,21 +335,42 @@ void ChiNtuple::Loop(){
 	  double genpt=genJetAK4_pt->at(genj);
 	  double geneta=genJetAK4_eta->at(genj);
 	  double fact=1.;
-	  if (genpt >10.){
+	  if (genpt >50.){
 	    if (doGaussian){
-	      fact=SmearFactor(genpt,std::abs(geneta));  // Suvadeep's Gaussian smearing 
+	      // fact=SmearFactor(genpt,std::abs(geneta),1.);  // Suvadeep's Gaussian smearing
+
+
+	      fact=jetresponse.doGaussianSmearing(genpt,geneta);
+	      
+	      // if (fact>1.001 && genpt>300.){
+	      // 	fact=.99;
+	      // 	while (fact < 1.){
+	      // 
+	      // 	  double xx=genpt;
+	      // 	  if (xx<300) xx=300;
+	      // 	  if (xx>900.)xx=900;
+	      // 
+	      // 	  double scaleSigma=0.99601+0.000241919*xx;
+	      // 	  // double scaleSigma=1.15;	      
+	      // 	  fact=SmearFactor(genpt,std::abs(geneta),scaleSigma);
+	      // 	  // std::cout << "Sigma scale factor: "<< scaleSigma << std::endl;
+	      // 	}	    
+	      // }
+	      
 	    }else{
 	      fact=10.;
 	      int nloop=0;
 	      while (fact>SmrMax){
-		fPtResol  = ptResol.resolutionEtaPt(geneta,genpt);
-		fact = fPtResol ->GetRandom();
+		//fPtResol  = ptResol.resolutionEtaPt(geneta,genpt);
+		//fact = fPtResol ->GetRandom();
+
+		fact=jetresponse.doCrystalBallSmearing(genpt,geneta);		
 		nloop++;
 		if (nloop>10) break;
 	      }
 	    }
 	  }
-
+	  
 	  TLorentzVector jetP4,smrP4;
 	  jetP4.SetPtEtaPhiE(genJetAK4_pt->at(genj),genJetAK4_eta->at(genj),genJetAK4_phi->at(genj),genJetAK4_e->at(genj));	  
 	  
@@ -401,7 +429,6 @@ void ChiNtuple::Loop(){
 	if (selectReco){	     
 	    
 	  double DijetMass = (Jet1+Jet2).M();
-	  fillHist("dijet_mass",DijetMass,weight);
 	  double DijetChi=exp(fabs(Jet1.Rapidity()-Jet2.Rapidity()));
 	  
 	  recoDijets.dijetFlag=1;
@@ -418,30 +445,45 @@ void ChiNtuple::Loop(){
 	  recoDijets.phi2=Jet2.Phi();
 	  recoDijets.e2=  Jet2.Energy();
 
-	  if (DijetMass>=massBins[0] && DijetMass<massBins[massBins.size()-1]){
-	    dijet_m_chi_0->Fill(DijetMass,DijetChi, weight);
-	    dijet_m_chi_1->Fill(DijetMass,DijetChi, weight);
-	    dijet_m_chi_2->Fill(DijetMass,DijetChi, weight);
-	    dijet_m_chi_3->Fill(DijetMass,DijetChi, weight);
-	    dijet_m_chi_4->Fill(DijetMass,DijetChi, weight);
+	  double teff=TriggerEff(recoDijets.mass,recoDijets.chi);
+	  //if (recoDijets.mass>1500)
+	  //  std::cout << "%mass/chi/teff: " << recoDijets.mass << "\t" << recoDijets.chi << "\t" << teff << std::endl;
+	  double wt=weight/teff;
+
+	  fillHist("dijet_mass",DijetMass,wt*teff);
+	  fillHist("dijet_mass_trg",DijetMass,wt);
+	  
+	  if (DijetMass>=massBins1[0] && DijetMass<massBins1[massBins1.size()-1]){
+	    dijet_mass1_chi1->Fill(DijetMass,DijetChi, wt);
+	    dijet_mass1_chi2->Fill(DijetMass,DijetChi, wt);
+	    dijet_mass1_chi3->Fill(DijetMass,DijetChi, wt);
+	    dijet_mass1_chi4->Fill(DijetMass,DijetChi, wt);
 	  }
 
-          for ( size_t j = 0; j < (chiBins.size()-1); ++j )
+	  if (DijetMass>=massBins2[0] && DijetMass<massBins2[massBins2.size()-1]){
+
+	    dijet_mass2_chi1->Fill(DijetMass,DijetChi, wt);
+	    dijet_mass2_chi2->Fill(DijetMass,DijetChi, wt);
+	    dijet_mass2_chi3->Fill(DijetMass,DijetChi, wt);
+	    dijet_mass2_chi4->Fill(DijetMass,DijetChi, wt);
+	  }
+	  
+          for ( size_t j = 0; j < (chiBins1.size()-1); ++j )
           {
 
-              if((DijetChi>=chiBins[j])&&
-	         (DijetChi<chiBins[j+1]))
+              if((DijetChi>=chiBins1[j])&&
+	         (DijetChi<chiBins1[j+1]))
               {
-                  mhists[j]->Fill(DijetMass, weight);
+                  mhists[j]->Fill(DijetMass, wt);
 	      }
 	  }
 	  
-          for ( size_t j = 0; j < (massBins.size()-1); ++j )
+          for ( size_t j = 0; j < (massBins1.size()-1); ++j )
           {
-              if((DijetMass>=massBins[j])&&
-	         (DijetMass<massBins[j+1]))
+              if((DijetMass>=massBins1[j])&&
+	         (DijetMass<massBins1[j+1]))
               {
-                  hists[j]->Fill(DijetChi, weight);
+                  hists[j]->Fill(DijetChi, wt);
 	      }
 	  }
 	  
@@ -478,7 +520,16 @@ void ChiNtuple::Loop(){
 	  genDijets.pt2= Jet2.Pt();
 	  genDijets.eta2=Jet2.Eta();
 	  genDijets.phi2=Jet2.Phi();
-	  genDijets.e2=  Jet2.Energy();	  
+	  genDijets.e2=  Jet2.Energy();
+
+          for ( size_t j = 0; j < (massBins1.size()-1); ++j )
+          {
+              if((DijetMass>=massBins1[j])&&
+	         (DijetMass<massBins1[j+1]))
+              {
+                  ghists[j]->Fill(genDijets.chi, weight);
+	      }
+	  }	  
 	};
 
 	int i1=findLeading(smrjet_pt);
@@ -499,36 +550,47 @@ void ChiNtuple::Loop(){
 	  
 	  //(smrjet_nConstituents[i1]>1)&&	     
 	  //(smrjet_nConstituents[i2]>1);
-	  if(selectSmr)
-	    {
-	      // fill smrjets
-	      TLorentzVector j1P4,j2P4,dijet;
-	      j1P4=smearedJets.at(0);
-	      j2P4=smearedJets.at(1);
-	      dijet=j1P4+j2P4;
-	      double invmass=dijet.M();
+	if(selectSmr)
+	  {
+	    // fill smrjets
+	    TLorentzVector j1P4,j2P4,dijet;
+	    j1P4=smearedJets.at(0);
+	    j2P4=smearedJets.at(1);
+	    dijet=j1P4+j2P4;
+	    double invmass=dijet.M();
+	    double DijetMass=invmass;
+	    fillHist("dijet_mass_smeared",invmass,weight);
+	    
+	    double pt1=smearedJets.at(0).Pt();
+	    double pt2=smearedJets.at(1).Pt();
+	    if (abs(pt1-smrjet_pt[i1]) > 0.0005)
+	      std::cout << "Problems wLeading: " << pt1 << " " <<  smrjet_pt[i1] << std::endl;
+	    if (abs(pt2-smrjet_pt[i2]) > 0.0005)
+	      std::cout << "Problems wNextLeading: " << pt2 << " " <<  smrjet_pt[i2] << std::endl;
+	    
+	    smrDijets.dijetFlag=1;
+	    smrDijets.mass=invmass;
+	    smrDijets.pt=dijet.Pt();
+	    smrDijets.chi=exp(fabs(smrjet_rapidity[i1]-smrjet_rapidity[i2]));
+	    smrDijets.yboost=fabs(smrjet_rapidity[i1]+smrjet_rapidity[i2])/2.;
+	    smrDijets.pt1= smrjet_pt[i1];
+	    smrDijets.eta1=smrjet_eta[i1];
+	    smrDijets.phi1=smrjet_phi[i1];
+	    smrDijets.e1=  smrjet_energy[i1];
+	    smrDijets.pt2= smrjet_pt[i2];
+	    smrDijets.eta2=smrjet_eta[i2];
+	    smrDijets.phi2=smrjet_phi[i2];
+	    smrDijets.e2=  smrjet_energy[i2];
 
-	      double pt1=smearedJets.at(0).Pt();
-	      double pt2=smearedJets.at(1).Pt();
-	      if (abs(pt1-smrjet_pt[i1]) > 0.0005)
-		  std::cout << "Problems wLeading: " << pt1 << " " <<  smrjet_pt[i1] << std::endl;
-	      if (abs(pt2-smrjet_pt[i2]) > 0.0005)
-		  std::cout << "Problems wNextLeading: " << pt2 << " " <<  smrjet_pt[i2] << std::endl;
-
-	      smrDijets.dijetFlag=1;
-	      smrDijets.mass=invmass;
-	      smrDijets.pt=dijet.Pt();
-	      smrDijets.chi=exp(fabs(smrjet_rapidity[i1]-smrjet_rapidity[i2]));
-	      smrDijets.yboost=fabs(smrjet_rapidity[i1]+smrjet_rapidity[i2])/2.;
-	      smrDijets.pt1= smrjet_pt[i1];
-	      smrDijets.eta1=smrjet_eta[i1];
-	      smrDijets.phi1=smrjet_phi[i1];
-	      smrDijets.e1=  smrjet_energy[i1];
-	      smrDijets.pt2= smrjet_pt[i2];
-	      smrDijets.eta2=smrjet_eta[i2];
-	      smrDijets.phi2=smrjet_phi[i2];
-	      smrDijets.e2=  smrjet_energy[i2];
-	    }
+	    for ( size_t j = 0; j < (massBins1.size()-1); ++j )
+	      {
+		if((DijetMass>=massBins1[j])&&
+		   (DijetMass<massBins1[j+1]))
+		    {
+		      shists[j]->Fill(smrDijets.chi, weight);
+		    }
+	      }	      
+	  }
 	//now check the response
 	for (int genj=0; genj<ngenJets; ++ genj){
 	  if (genj>1)break;
@@ -570,7 +632,8 @@ void ChiNtuple::Loop(){
 	    fill3DHist("SmrResp3D",genpt,geny,rat,weight);
 	    // std::cout << "smrjet size: " << smrjet_pt.size() << std::endl;
 	    // std::cout << "XXX: " << smrjet_pt[genj] << " -- " << genpt << " " << genjet_pt[genj]<< std::endl;
-	    if (genpt>300. and genpt < 400. and abs(geny)<1.) fillHist("SmrResp",rat,weight);	    
+	    if ((genpt>300.) && (genpt < 400.) && (abs(geny)<1.) ) fillHist("SmrResp",rat,weight);
+	    if ((genpt>600.) && (genpt < 800.) && (abs(geny)>2.0)) fillHist("SmrResp2",rat,weight);	    
 	  }// genpt>50
 	}// end of loop over genjets
       }// end of ngenjets if
@@ -586,6 +649,8 @@ int main(int argc, char* argv[])
   gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
 
+  clock_t start = clock();
+  
   // parse arguments
   if ( argc < 2 ) {
     std::cout << "Usage : " << argv[0] << " [parameters.py]" << std::endl;
@@ -601,19 +666,25 @@ int main(int argc, char* argv[])
   }
   const edm::ParameterSet& process = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
   const edm::ParameterSet& ana = process.getParameter<edm::ParameterSet>("chiNtuples");
-  double NEVENTS_( ana.getParameter<int>("Nevts") );  
+  int NEVENTS_( ana.getParameter<int>("Nevts") );  
   double XS_( ana.getParameter<double>("CrossSection") );
   bool ISDATA_( ana.getParameter<bool>("IsData") );
   bool DOGAUSSIAN_( ana.getParameter<bool>("DoGaussian") );
+  bool AK4_SF_( ana.getParameter<bool>("AK4_SF") );
+  bool DATAtoMC_SF_( ana.getParameter<bool>("DATAtoMC_SF") );
   string INPUTFILES_( ana.getParameter<string>("InputFiles") );
   string OUTPUTFILE_( ana.getParameter<string>("OutputFile") );  
   double SMEARMAX_( ana.getParameter<double>("SmearMax") );
+  int SYSERR_( ana.getParameter<int>("SysErr") );
   
   chiNtuple->SetXSWeight(XS_);
   chiNtuple->SetIsData(ISDATA_);
   chiNtuple->SetDoGaussian(DOGAUSSIAN_);
   chiNtuple->SetSmrMax(SMEARMAX_);
-  chiNtuple->SetNevents(NEVENTS_);  
+  chiNtuple->SetNevents(NEVENTS_);
+  chiNtuple->SetDoSysErr(SYSERR_);
+  chiNtuple->SetAK4_SF(AK4_SF_);
+  chiNtuple->SetDataToMC_SF(DATAtoMC_SF_);  
   
   cout << "Booking Histograms..." << endl;
   chiNtuple->BookHistograms(OUTPUTFILE_);
@@ -628,7 +699,11 @@ int main(int argc, char* argv[])
 
   chiNtuple->Loop();
   chiNtuple->WriteHistograms();
-  
+  std::cout << "ChiNtuple: Finished Processing Normally" << std::endl;
+
+  clock_t elapsedTicks = clock() - start;
+  double elapsedTimeInSeconds = elapsedTicks/CLOCKS_PER_SEC;
+  std::cout << "CPU processing time (in seconds): " << int(elapsedTimeInSeconds) << "\n" << std::endl;
   delete chiNtuple;
   return 0;
 }

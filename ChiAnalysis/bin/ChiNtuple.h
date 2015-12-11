@@ -612,13 +612,16 @@ double ChiNtuple::TriggerEff(double mass, double chi){
     par[2] = 174.130748889;
   }else if ( chi <= 14){
     par[0] = 1.0;
-    par[1] = 1508.70366162;
-    par[2] = 169.303061065;
+    par[1] = 1510.93614717;
+    par[2] = 163.404589511;
   }else if ( chi <= 16){
     par[0] = 1.0;
-    par[1] = 1590.72609729;
-    par[2] = 203.28102181;
+    par[1] = 1569.32715144;
+    par[2] = 237.517019129;
+  }else{
+    return eff.
   }
+    
 
   double xx=mass;
   if (xx<1500.) xx=1500.;

@@ -414,7 +414,8 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   Float_t chibins2[] = { 1,2,3,4,5,6,7,8,9,10,12,14,16};
   Int_t  nchibins2 = sizeof(chibins2)/sizeof(Float_t) - 1;
 
-  Float_t chibins3[] = { 1,2,4,6,8,10,12,14,16};
+  //Float_t chibins3[] = { 1,2,4,6,8,10,12,14,16};
+  Float_t chibins3[] = {1,3,6,9,12,16};
   Int_t  nchibins3 = sizeof(chibins3)/sizeof(Float_t) - 1;
 
   Float_t chibins4[] = { 1,3,5,7,10,12,14,16};

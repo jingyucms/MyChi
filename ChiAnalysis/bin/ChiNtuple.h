@@ -619,7 +619,7 @@ double ChiNtuple::TriggerEff(double mass, double chi){
     par[1] = 1569.32715144;
     par[2] = 237.517019129;
   }else{
-    return eff.
+    return eff;
   }
     
 

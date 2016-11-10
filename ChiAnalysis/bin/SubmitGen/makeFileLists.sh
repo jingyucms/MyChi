@@ -6,11 +6,11 @@ INDIR=/eos/cms/store/cmst3/user/hinzmann/dijet_angular
 for mass in 1000_1500 1500_1900 1900_2400 2400_2800 2800_3300 3300_3800 3800_4300 4300_13000
 # for mass in 1000_1500
 do
-    # outname=filelists/pythia8_ci_50000__Nov14/m${mass}/fileList.txt
-    # searchstring=jobtmp_pythia8_ci_m${mass}_50000_1_0_0_13TeV_Nov14
+    outname=filelists/pythia8_ci_50000__Nov14/m${mass}/fileList.txt
+    searchstring=jobtmp_pythia8_ci_m${mass}_50000_1_0_0_13TeV_Nov14
 
-    outname=filelists/herwigpp_Nov28/m${mass}/fileList.txt
-    searchstring=jobtmp_herwigpp_qcd_m${mass}___Nov28    
+    # outname=filelists/herwigpp_Nov28/m${mass}/fileList.txt
+    # searchstring=jobtmp_herwigpp_qcd_m${mass}___Nov28    
     python makeEOSfilelist.py $INDIR $outname $searchstring ${FilesPerCfg} # to make original list
 
     #inList=${outname}

@@ -1,13 +1,16 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-# nevents=100000
+# nevents=1000
 nevents=0
+
+## myTrigger="PFHT800";
+myTrigger="PFHT650";
 
 jobIndex=os.environ['JOBNUM']
 
-ntuples="filelists/1pt3invfb/fileList_"+jobIndex+".txt"
-output="hsts/chiNtuple_data_"+jobIndex+".root"
+ntuples="filelists/2pt4invfb/fileList_"+jobIndex+".txt"
+output="hsts/chiNtuple_"+myTrigger+"_"+jobIndex+".root"
 
 process = cms.PSet()
 process.chiNtuples = cms.PSet(
@@ -18,5 +21,9 @@ process.chiNtuples = cms.PSet(
     OutputFile = cms.string(output),
     IsData = cms.bool(True),
     DoGaussian = cms.bool(False),
-    SmearMax = cms.double(0)
+    AK4_SF = cms.bool(False),
+    DATAtoMC_SF = cms.bool(False),
+    SmearMax = cms.double(0),
+    Trigger = cms.string(myTrigger),
+    SysErr = cms.int32(0) ## +-1 to smear by additional +-10%,  anything else no addtional smearing
 )

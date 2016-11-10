@@ -28,40 +28,41 @@ echo
 
 
 echo bsub -q ${QUEUE} -oo ${logfile} ${SUB_SCRIPT} ${cfgfile}
-# bsub -q ${QUEUE} -oo ${logfile} ${SUB_SCRIPT} ${cfgfile}
+bsub -q ${QUEUE} -oo ${logfile} ${SUB_SCRIPT} ${cfgfile}
 
 }
 
 #################################################################################
 
+theDate=`date '+%Y%m%d'`
 
 COUNTER=0
 # for GENR in Pythia8 Herwig
 # for GENR in Herwig
 for GENR in Pythia8
 do
-    # for TRUNC in 2 2.5 3
+    # for TRUNC in 0 2
     for TRUNC in 0
-    # for TRUNC in 2.5 3
-    # for TRUNC in 4 5
-    # for TRUNC in 3.5
-    do 
-	## CFGDIR=genCFGS/${GENR}CrystalBallT${TRUNC}
-	CFGDIR=genCFGS/${GENR}Gaussian
-	## CFGDIR=genCFGS_new/${GENR}GaussianSysMinus
-	## CFGDIR=genCFGS_BigStat/${GENR}Gaussian
-	## CFGDIR=genCFGS_PosRes/${GENR}Gaussian
+    do
+	if [ ${TRUNC} == 0 ]; then
+	    ## CFGDIR=genCFGS/${GENR}Gaussian
+	    CFGDIR=genCFGS/${GENR}GaussianSysMinus
+        else
+	    ## CFGDIR=genCFGS/${GENR}CrystalBallT${TRUNC}
+	    CFGDIR=genCFGS/${GENR}CrystalBall
+	fi
+	
 	for mass in 1000_1500 1500_1900 1900_2400 2400_2800 2800_3300 3300_3800 3800_4300 4300_13000
-	## for mass in 3700_8000
+	## for mass in 1000_1500
 	do
-            for a in {0..9}
-	    # for a in 0
+	    njobs=`ls -1 ${CFGDIR}/m${mass}/*py | wc -l`
+	    njobs=$(($njobs - 1))
+            for a in $(seq 0 $njobs);
+	    # or a in 0
 	    do
-		##config=$CFGDIR/chiCFG_m${mass}_${a}.py
-		##logfile=$CFGDIR/chiCFG_m${mass}_${a}.log
 
-		config=$CFGDIR/m${mass}/chiCFG_${a}.py
-		logfile=$CFGDIR/m${mass}/chiCFG_${a}.log
+		config=$CFGDIR/m${mass}/GenChiNtuple_cfg_${a}.py
+		logfile=$CFGDIR/m${mass}/GenChiNtuple_cfg_${a}_${theDate}.log
 
 		echo $config $logfile
 		Submit $config $logfile

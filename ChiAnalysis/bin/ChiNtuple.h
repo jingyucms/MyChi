@@ -105,6 +105,7 @@ public:
   void BookHistograms(const std::string & fname);
   void WriteHistograms();
   void SetXSWeight(const double &);
+  void SetTrigger(const string &);  
   void SetSmrMax(const double &);
   void SetIsData(const bool &);
   void SetDoGaussian(const bool &);
@@ -121,6 +122,8 @@ public:
   TFile *outFile;
   TH1F *myHist;
 
+  string WhichTrigger;
+  
   TTree *_outTree;
   Float_t XSweight;
   Float_t EVTweight;
@@ -270,6 +273,15 @@ void ChiNtuple::SetXSWeight(const double & wt){
   
 }
 
+void ChiNtuple::SetTrigger(const string & x){
+  if (x != "PFHT650" && x != "PFHT800"){
+    std::cout << "Invalid Trigger Path..." << std::endl;
+    WhichTrigger="None";
+  }else{
+    WhichTrigger=x;
+  }
+}
+
 void ChiNtuple::SetSmrMax(const double & x){
   
   SmrMax=x;
@@ -353,10 +365,13 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   int nMass=80.;
   double minMass=0., maxMass=8000.;
 
-  hname="dijet_mass"; htitle="M_{jj}";
+  hname="dijet_mass"; htitle="M_{jj} -- No Trigger Requirement";
   m_HistNames[hname] =  Book1dHist(hname,htitle,nMass,minMass,maxMass, true);
 
-  hname="dijet_mass_trg"; htitle="M_{jj} w/ Trigger Eff";
+  hname="dijet_mass_trg"; htitle="M_{jj} Trigger Applied";
+  m_HistNames[hname] =  Book1dHist(hname,htitle,nMass,minMass,maxMass, true);
+  
+  hname="dijet_mass_trgcorr"; htitle="M_{jj} Trigger Applied & Corrected";
   m_HistNames[hname] =  Book1dHist(hname,htitle,nMass,minMass,maxMass, true);
   
   hname="dijet_mass_gen"; htitle="M_{jj} Generated";  
@@ -372,7 +387,7 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   m_HistNames[hname] =  Book1dHist(hname, htitle, 10, -0.5, 9.5, false );
   
   hname="evtsHT"; htitle="Number of Events per HT Bin";
-  m_HistNames[hname] =  Book1dHist(hname, htitle, 5, -1.5, 3.5, false );
+  m_HistNames[hname] =  Book1dHist(hname, htitle, 11, -1.5, 9.5, false );
 
   hname="evtsM"; htitle="Number of Events per Mass Bin";
   m_HistNames[hname] =  Book1dHist(hname, htitle, 11, -1.5, 9.5, false );
@@ -590,37 +605,70 @@ double ChiNtuple::TriggerEff(double mass, double chi){
   if (mass<1000.) return eff;
   
   double par[] { 0, 0., 0. }; 
-  if ( chi <= 2){
-    par[0] = 1.0;
-    par[1] = 796.928610698;
-    par[2] = 77.1506076781;
-  }else if ( chi <= 4){
-    par[0] = 1.0;
-    par[1] = 886.176274484;
-    par[2] = 119.74926938;
-  }else if ( chi <= 6){
-    par[0] = 1.0;
-    par[1] = 1034.43359036;
-    par[2] = 129.769721544;
+  // if ( chi <= 2){
+  //   par[0] = 1.0;
+  //   par[1] = 796.928610698;
+  //   par[2] = 77.1506076781;
+  // }else if ( chi <= 4){
+  //   par[0] = 1.0;
+  //   par[1] = 886.176274484;
+  //   par[2] = 119.74926938;
+  // }else if ( chi <= 6){
+  //   par[0] = 1.0;
+  //   par[1] = 1034.43359036;
+  //   par[2] = 129.769721544;
+  // }else if ( chi <= 10){
+  //   par[0] = 1.0;
+  //   par[1] = 1221.16044494;
+  //   par[2] = 176.482231463;
+  // }else if ( chi <= 12){
+  //   par[0] = 1.0;
+  //   par[1] = 1393.81742045;
+  //   par[2] = 174.130748889;
+  // }else if ( chi <= 14){
+  //   par[0] = 1.0;
+  //   par[1] = 1510.93614717;
+  //   par[2] = 163.404589511;
+  // }else if ( chi <= 16){
+  //   par[0] = 1.0;
+  //   par[1] = 1569.32715144;
+  //   par[2] = 237.517019129;
+  // }else{
+  //   return eff;
+  // }
+if ( chi <= 9){
+  return eff;
   }else if ( chi <= 10){
     par[0] = 1.0;
-    par[1] = 1221.16044494;
-    par[2] = 176.482231463;
+    par[1] = 754.419316016;
+    par[2] = 440.42113328;
+  }else if ( chi <= 11){
+    par[0] = 1.0;
+    par[1] = 1298.56047752;
+    par[2] = 204.330079661;
   }else if ( chi <= 12){
     par[0] = 1.0;
-    par[1] = 1393.81742045;
-    par[2] = 174.130748889;
+    par[1] = 1460.53923819;
+    par[2] = 121.919268924;
+  }else if ( chi <= 13){
+    par[0] = 1.0;
+    par[1] = 1486.13588575;
+    par[2] = 156.861115342;
   }else if ( chi <= 14){
     par[0] = 1.0;
-    par[1] = 1510.93614717;
-    par[2] = 163.404589511;
+    par[1] = 1524.20832697;
+    par[2] = 176.101639119;
+  }else if ( chi <= 15){
+    par[0] = 1.0;
+    par[1] = 1549.67809257;
+    par[2] = 212.030436615;
   }else if ( chi <= 16){
     par[0] = 1.0;
-    par[1] = 1569.32715144;
-    par[2] = 237.517019129;
+    par[1] = 1582.37906391;
+    par[2] = 246.476359;
   }else{
     return eff;
-  }
+  }  
     
 
   double xx=mass;

@@ -5,6 +5,8 @@ import sys,string,math,os
 import ConfigParser
 import glob
 
+## last run as makeEOSfilelist.py /eos/cms/store/cmst3/user/hinzmann/dijet_angular/QCDv7 filelists/2pt4invfb/fileList.txt EXOVVTree_JetHT 30
+
 # eosCommand="/afs/cern.ch/project/eos/installation/0.2.31/bin/eos.select"
 eosCommand="/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
 filePrefix="root://eoscms/"

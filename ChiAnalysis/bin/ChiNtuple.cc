@@ -51,6 +51,8 @@ void ChiNtuple::Loop(){
   std::vector<float>              *jetAK4_e=0         ;
   std::vector<bool>               *jetAK4_IDLoose=0;
   std::vector<bool>               *jetAK4_IDTight=0;
+
+  std::map<std::string,bool> *HLT_isFired=0;
   
   Bool_t                            passFilter_HBHE_=0;
   Bool_t                            passFilter_CSCHalo_=0;
@@ -64,6 +66,8 @@ void ChiNtuple::Loop(){
   TBranch *b_jetAK4_e; //!
   TBranch *b_jetAK4_IDLoose; //!
   TBranch *b_jetAK4_IDTight; //!
+
+  TBranch *b_HLT_isFired;
   
   TBranch                             *b_passFilter_HBHE; //!
   TBranch                             *b_passFilter_CSCHalo; //!
@@ -96,7 +100,8 @@ void ChiNtuple::Loop(){
   fChain->SetBranchAddress("jetAK4_e",   &jetAK4_e,   &b_jetAK4_e);
   fChain->SetBranchAddress("jetAK4_IDLoose",   &jetAK4_IDLoose,   &b_jetAK4_IDLoose);
   fChain->SetBranchAddress("jetAK4_IDTight",   &jetAK4_IDTight,   &b_jetAK4_IDTight);
-  
+
+  fChain->SetBranchAddress("HLT_isFired",   &HLT_isFired,   &b_HLT_isFired);
   
   fChain->SetBranchAddress("passFilter_HBHE",      &passFilter_HBHE_,      &b_passFilter_HBHE);
   fChain->SetBranchAddress("passFilter_CSCHalo",   &passFilter_CSCHalo_,   &b_passFilter_CSCHalo);
@@ -122,6 +127,8 @@ void ChiNtuple::Loop(){
   fChain->SetBranchStatus("jetAK4_e",  1);
   fChain->SetBranchStatus("jetAK4_IDLoose",  1);
   fChain->SetBranchStatus("jetAK4_IDTight",  1);
+
+  fChain->SetBranchStatus("HLT_isFired",  1);
   
   fChain->SetBranchStatus("passFilter_HBHE",      1);
   fChain->SetBranchStatus("passFilter_CSCHalo",   1);
@@ -151,10 +158,12 @@ void ChiNtuple::Loop(){
   cout << "Number of events: " << nevents << endl;  
   
   std::vector<string> htBins, ptBins, mBins;
-  htBins.push_back("HT-100To250");
-  htBins.push_back("HT-250To500");
-  htBins.push_back("HT-500To1000");
-  htBins.push_back("HT-1000ToInf");
+  htBins.push_back("HT300to500");
+  htBins.push_back("HT500to700");
+  htBins.push_back("HT700to1000");
+  htBins.push_back("HT1000to1500");
+  htBins.push_back("HT1500to2000");
+  htBins.push_back("HT2000toInf");
 
 
   mBins.push_back("m900_1400");
@@ -312,10 +321,53 @@ void ChiNtuple::Loop(){
       smrDijets.e2=initval;
 
       if (iEvent == 0){
+	std::cout << "\n\tNumber of triggers: " << HLT_isFired->size() << std::endl;
+	std::map<std::string,bool>::iterator hlt_iter;	
+	for (hlt_iter = HLT_isFired->begin(); hlt_iter!=HLT_isFired->end(); ++ hlt_iter){
+	  std::cout << hlt_iter->first << std::endl;
+	}
 	std::cout << "\n\tUsing XS weight: " << XSweight << std::endl;
 	std::cout << "\tUsing EVT weight: " << EVTweight << "\n" <<std::endl;
       }
 
+      bool yesTrigger(true);
+      bool hltPFHT800(true);
+      bool hltPFHT650(true);      
+      if (IsData){
+	yesTrigger=false;
+	hltPFHT800=false;
+	hltPFHT650=false;	
+
+	bool hltPFHT650_v1(false);
+	bool hltPFHT650_v2(false);
+	bool hltPFHT650_v3(false);
+
+	bool hltPFHT800_v1(false);
+	bool hltPFHT800_v2(false);
+	bool hltPFHT800_v3(false);
+	
+	std::map<std::string,bool>::iterator trig_iter;		
+	trig_iter=HLT_isFired->find("HLT_PFHT650_v1");
+	if (trig_iter!=HLT_isFired->end())hltPFHT650_v1=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT650_v2");
+	if (trig_iter!=HLT_isFired->end())hltPFHT650_v2=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT650_v3");
+	if (trig_iter!=HLT_isFired->end())hltPFHT650_v3=trig_iter->second;
+
+	trig_iter=HLT_isFired->find("HLT_PFHT800_v1");
+	if (trig_iter!=HLT_isFired->end())hltPFHT800_v1=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT800_v2");
+	if (trig_iter!=HLT_isFired->end())hltPFHT800_v2=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT800_v3");
+	if (trig_iter!=HLT_isFired->end())hltPFHT800_v3=trig_iter->second;
+	
+	hltPFHT650=hltPFHT650_v1 || hltPFHT650_v2 || hltPFHT650_v3;
+	hltPFHT800=hltPFHT800_v1 || hltPFHT800_v2 || hltPFHT800_v3;
+
+	if (WhichTrigger == "PFHT650") yesTrigger=hltPFHT650;
+	if (WhichTrigger == "PFHT800") yesTrigger=hltPFHT800;
+      }
+      
       int ngenJets=0;
       if (!IsData) ngenJets=genJetAK4_pt->size();
       
@@ -445,13 +497,18 @@ void ChiNtuple::Loop(){
 	  recoDijets.phi2=Jet2.Phi();
 	  recoDijets.e2=  Jet2.Energy();
 
-	  double teff=TriggerEff(recoDijets.mass,recoDijets.chi);
+	  double teff(1.);
+	  if (WhichTrigger == "PFHT800")
+	    teff=TriggerEff(recoDijets.mass,recoDijets.chi);
+			     
 	  //if (recoDijets.mass>1500)
 	  //  std::cout << "%mass/chi/teff: " << recoDijets.mass << "\t" << recoDijets.chi << "\t" << teff << std::endl;
 	  double wt=weight/teff;
+	  if (!yesTrigger) wt=0.;
 
-	  fillHist("dijet_mass",DijetMass,wt*teff);
-	  fillHist("dijet_mass_trg",DijetMass,wt);
+	  fillHist("dijet_mass",DijetMass,weight);
+	  if (hltPFHT800) fillHist("dijet_mass_trg",DijetMass,weight);
+	  fillHist("dijet_mass_trgcorr",DijetMass,wt);
 	  
 	  if (DijetMass>=massBins1[0] && DijetMass<massBins1[massBins1.size()-1]){
 	    dijet_mass1_chi1->Fill(DijetMass,DijetChi, wt);
@@ -673,7 +730,8 @@ int main(int argc, char* argv[])
   bool AK4_SF_( ana.getParameter<bool>("AK4_SF") );
   bool DATAtoMC_SF_( ana.getParameter<bool>("DATAtoMC_SF") );
   string INPUTFILES_( ana.getParameter<string>("InputFiles") );
-  string OUTPUTFILE_( ana.getParameter<string>("OutputFile") );  
+  string OUTPUTFILE_( ana.getParameter<string>("OutputFile") );
+  string TRIGGER_( ana.getParameter<string>("Trigger") );    
   double SMEARMAX_( ana.getParameter<double>("SmearMax") );
   int SYSERR_( ana.getParameter<int>("SysErr") );
   
@@ -685,6 +743,7 @@ int main(int argc, char* argv[])
   chiNtuple->SetDoSysErr(SYSERR_);
   chiNtuple->SetAK4_SF(AK4_SF_);
   chiNtuple->SetDataToMC_SF(DATAtoMC_SF_);  
+  chiNtuple->SetTrigger(TRIGGER_);
   
   cout << "Booking Histograms..." << endl;
   chiNtuple->BookHistograms(OUTPUTFILE_);

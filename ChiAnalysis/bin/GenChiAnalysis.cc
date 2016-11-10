@@ -288,11 +288,16 @@ int main(int argc, char* argv[])
 
 
       std::vector<string> htBins, ptBins, mBins;
-      htBins.push_back("100To250");
-      htBins.push_back("250To500");
-      htBins.push_back("500To1000");
-      htBins.push_back("1000ToInf");
-
+      // htBins.push_back("100To250");
+      // htBins.push_back("250To500");
+      // htBins.push_back("500To1000");
+      // htBins.push_back("1000ToInf");
+      htBins.push_back("HT300to500");
+      htBins.push_back("HT500to700");
+      htBins.push_back("HT700to1000");
+      htBins.push_back("HT1000to1500");
+      htBins.push_back("HT1500to2000");
+      htBins.push_back("HT2000toInf");
 
       ptBins.push_back("m900_1400");
       ptBins.push_back("m1400_2500");

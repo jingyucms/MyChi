@@ -12,6 +12,7 @@ using std::map;
 
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "TRandom.h"
+#include "TMath.h"
 
 double fnc_dscb(double*xx,double*pp)
 {
@@ -281,34 +282,80 @@ class MyJetResponse {
   double ak4_scalefact(double x){
     double fact(1.);
     double xx=x;
+    // 74x smearing    
+    // if (xx<300) xx=300;
+    // if (xx>900.)xx=900;
+    // fact=0.99601+0.000241919*xx;
+
+    // 76x smearing
     if (xx<300) xx=300;
-    if (xx>900.)xx=900;
-    fact=0.99601+0.000241919*xx;
-    // std::cout << "AK4_Scalefact: " << fact << std::endl;
+    if (xx>2000.)xx=2000;
+    fact=1.38043e+00*TMath::TanH(3.45865e-04*(xx-(-2.06310e+03)));
+    
+    // std::cout << "AK4_Scalefact: " << "pt: " << x << "\t" << fact << std::endl;
     return fact;
   }
 
+  // old 74x scale factors
+  // double DataToMC_scalefact(double xx){
+  //   double fact(1.);
+  // 
+  //   double eta=fabs(xx);
+  // 
+  //   if (eta < 0.8) {
+  //     fact=1.094;
+  //   }
+  //   else if (eta < 1.3) {
+  //     fact=1.071;
+  //   }
+  //   else if (eta < 1.9) {
+  //     fact=1.108;
+  //   }
+  //   else if (eta < 2.5) {
+  //     fact=1.13;
+  //   }
+  //   
+  //   // std::cout << "DataToMC_Scalefact: " << fact << std::endl;
+  //   return fact;
+  // }
+  // new scale factors for 76x
   double DataToMC_scalefact(double xx){
     double fact(1.);
 
     double eta=fabs(xx);
 
-    if (eta < 0.8) {
-      fact=1.094;
+    if (eta < 0.5) {
+      fact=1.095;
+    }
+    else if (eta < 0.8) {
+      fact=1.120;
+    }
+    else if (eta < 1.1) {
+      fact=1.097;
     }
     else if (eta < 1.3) {
-      fact=1.071;
+      fact=1.103;
+    }
+    else if (eta < 1.7) {
+      fact=1.118;
     }
     else if (eta < 1.9) {
-      fact=1.108;
+      fact=1.100;
+    }
+    else if (eta < 2.1) {
+      fact=1.162;
+    }
+    else if (eta < 2.3) {
+      fact=1.160;
     }
     else if (eta < 2.5) {
-      fact=1.13;
+      fact=1.161;
     }
     
     // std::cout << "DataToMC_Scalefact: " << fact << std::endl;
     return fact;
-  }
+  }  
+
   
   int WhichEtaBin(double eta, const std::vector<double> etaMinBins, const std::vector<double> etaMaxBins){
     int ibin=-1;

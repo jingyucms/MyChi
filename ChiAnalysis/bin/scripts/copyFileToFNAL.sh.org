@@ -1,0 +1,51 @@
+#!/bin/bash
+
+
+# EXEC=srmcp
+EXEC="lcg-cp -b -D srmv2"
+# EXEC="/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select cp"
+
+## FILENAME=SimL1Emulator_Stage1_PP_1_1_rTd.root
+
+## inPREFIX=file:///$PWD  ## LOCAL
+## inPREFIX=.  ## LOCAL
+## inPREFIX=srm://cmseos.fnal.gov:8443/srm/v2/server?SFN=   ## FNAL
+## inDIR=/eos/uscms/store/user/lpctrig/apana
+
+inPREFIX=srm://srm-eoscms.cern.ch:8443/srm/v2/server?SFN=   ## CERN
+## inDIR=/eos/cms/store/caf/user/apana/Chi_13TeV/ChiNtuples/Data
+inDIR=/eos/cms/store/caf/user/apana/Chi_13TeV/ChiNtuples/MC/76x
+
+## inDIR=XXX  ## use XXX if file is in current directory
+
+## FNAL
+outPREFIX=srm://cmseos.fnal.gov:8443/srm/v2/server?SFN=
+outDIR=/eos/uscms/store/user/apana/Chi_13TeV/ChiNtuples/MC/76x
+
+## CERN
+## outPREFIX=srm://srm-eoscms.cern.ch:8443/srm/v2/server?SFN=
+## outDIR=/eos/cms/store/caf/user/apana/L1Tutorial/Neutrino/results
+
+
+for FILENAME in chiNtuple_Ht300to13000_CB2_AK4SF.root
+## for FILENAME in `ls *root`;
+do
+
+outFILE=$outPREFIX/$outDIR/$FILENAME
+
+## if [[ $inPREFIX = file:///* ]]
+if [[ $inDIR = *XXX* ]]
+then
+    echo -e "\n\tCopying local File\n"
+    inFILE=$inPREFIX/$FILENAME
+else
+    echo -e "\n\tCopying remote File\n"
+    inFILE=$inPREFIX/$inDIR/$FILENAME
+fi
+
+echo $EXEC $inFILE $outFILE
+$EXEC $inFILE $outFILE
+echo -e "\n\tDone\n"
+done
+
+

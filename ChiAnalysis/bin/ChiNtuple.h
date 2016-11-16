@@ -422,10 +422,10 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   m_HistNames[hname] =  Book1dHist(hname, htitle, njr, jrmin, jrmax, true );
   
   hname="Resp3D"; htitle="Jet response vs pt,y";
-  m_HistNames3D[hname]=Book3dHist(hname, htitle, 200, 0. ,2000., neta, etamin, etamax, njr, jrmin, jrmax, true);
+  m_HistNames3D[hname]=Book3dHist(hname, htitle, 300, 0. ,3000., neta, etamin, etamax, njr, jrmin, jrmax, true);
 
   hname="SmrResp3D"; htitle="Smeared Jet response vs pt,y";
-  m_HistNames3D[hname]=Book3dHist(hname, htitle, 200, 0. ,2000., neta, etamin, etamax, njr, jrmin, jrmax, true);
+  m_HistNames3D[hname]=Book3dHist(hname, htitle, 300, 0. ,3000., neta, etamin, etamax, njr, jrmin, jrmax, true);
 
   Float_t mbins1[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,13000};
   Int_t  nmbins1 = sizeof(mbins1)/sizeof(Float_t) - 1;

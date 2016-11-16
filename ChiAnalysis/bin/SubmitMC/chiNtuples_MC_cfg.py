@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import os,sys
 
 nevents=0
-## nevents=10000
+## nevents=1000
 ## nevents=40000
 
 PtBins={"Pt_170to300":117276.0,
@@ -20,7 +20,8 @@ PtBins={"Pt_170to300":117276.0,
         "HT700to1000":6831.0,
         "HT1000to1500":1207.0,
         "HT1500to2000":119.9,
-        "HT2000toInf":25.24
+        "HT2000toInf":25.24,
+        "flatQCD":-1.0
 }
 theBins=PtBins.keys()
 ## print len(theBins),theBins
@@ -74,6 +75,8 @@ else:
 
 if GENERATOR=="pythia8":
     ntuples="filelists/pythia8_newJES/ntuples_"+ thePTBin +"_"+jobNum+".list"
+elif GENERATOR=="25nsMC10":
+    ntuples="filelists/25nsMC10/ntuples_"+jobNum+".list"
 else:
     ntuples="filelists/madgraphMLM_newJES/ntuples_"+ thePTBin +"_"+jobNum+".list"
 

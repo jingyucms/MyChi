@@ -136,6 +136,7 @@ public:
   Int_t HTBin;
   Int_t PTBin;
   Int_t MBin;
+  Int_t FlatBin;
    
   DijetInfo recoDijets,genDijets,smrDijets;
   
@@ -205,7 +206,8 @@ bool ChiNtuple::OpenInputFiles()
 {
   std::string commentLine ("#");
   
-  fChain     = new TChain("ntuplizer/tree");
+  //fChain     = new TChain("ntuplizer/tree");
+  fChain     = new TChain("tree");
 
   for (unsigned int i=0;i<listNtuples.size();i++)
   {
@@ -268,8 +270,13 @@ vector <TLorentzVector> ChiNtuple::sortJets(const vector<TLorentzVector> p4){
 }
 
 void ChiNtuple::SetXSWeight(const double & wt){
-  if (wt<0) std::cout << "Negative XS given.  This will not end well..." << std::endl;
-  xsweight=wt;
+  if ( fabs(wt - -1.) <0.0001){
+    std::cout << "XS weight taken from ntuple" << std::endl;
+    xsweight=-1.;
+  }else{
+    if (wt<0) std::cout << "Negative XS given.  This will not end well..." << std::endl;
+    xsweight=wt;
+  }
   
 }
 
@@ -395,6 +402,9 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   hname="evtsPT"; htitle="Number of Events per PT Bin";
   m_HistNames[hname] =  Book1dHist(hname, htitle, 11, -1.5, 9.5, false );
 
+  hname="evtsFLAT"; htitle="Number of Events per flat QCD Bin";
+  m_HistNames[hname] =  Book1dHist(hname, htitle, 11, -1.5, 9.5, false );
+  
 
   int njr=60;
   double jrmin=0.,jrmax=3.;
@@ -531,6 +541,7 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   _outTree->Branch("HTBin",  &HTBin ,  "HTBin/I");
   _outTree->Branch("MBin",   &MBin ,   "MBin/I");
   _outTree->Branch("PTBin",  &PTBin ,  "PTBin/I");
+  _outTree->Branch("FlatBin",  &FlatBin ,  "FlatBin/I");  
   
   _outTree->Branch("recoDijets", &recoDijets, "dijetFlag/I:mass/F:pt/F:chi/F:yboost/F:pt1/F:eta1/F:phi1/F:e1/F:pt2/F:eta2/F:phi2/F:e2/F");
   _outTree->Branch("genDijets",  &genDijets , "dijetFlag/I:mass/F:pt/F:chi/F:yboost/F:pt1/F:eta1/F:phi1/F:e1/F:pt2/F:eta2/F:phi2/F:e2/F");

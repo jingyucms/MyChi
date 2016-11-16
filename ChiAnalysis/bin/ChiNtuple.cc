@@ -44,48 +44,113 @@ void ChiNtuple::Loop(){
   
   jetresponse.GetResolutionParameters(ptFileName,doGaussian);
     
-  int                             jetAK4_N             ;
-  std::vector<float>              *jetAK4_pt=0         ;
-  std::vector<float>              *jetAK4_eta=0         ;
-  std::vector<float>              *jetAK4_phi=0         ;
-  std::vector<float>              *jetAK4_e=0         ;
-  std::vector<bool>               *jetAK4_IDLoose=0;
-  std::vector<bool>               *jetAK4_IDTight=0;
+  // int                             jetAK4_N             ;
+  // std::vector<float>              *jetAK4_pt=0         ;
+  // std::vector<float>              *jetAK4_eta=0         ;
+  // std::vector<float>              *jetAK4_phi=0         ;
+  // std::vector<float>              *jetAK4_e=0         ;
+  // std::vector<bool>               *jetAK4_IDLoose=0;
+  // std::vector<bool>               *jetAK4_IDTight=0;
+  // 
+  // std::map<std::string,bool> *HLT_isFired=0;
+  // 
+  // Bool_t                            passFilter_HBHE_=0;
+  // Bool_t                            passFilter_CSCHalo_=0;
+  // Bool_t                            passFilter_GoodVtx_=0;
+  // Bool_t                            passFilter_EEBadSc_=0;
+  // 
+  // TBranch *b_jetAK4_N; //!
+  // TBranch *b_jetAK4_pt; //!
+  // TBranch *b_jetAK4_eta; //!
+  // TBranch *b_jetAK4_phi; //!
+  // TBranch *b_jetAK4_e; //!
+  // TBranch *b_jetAK4_IDLoose; //!
+  // TBranch *b_jetAK4_IDTight; //!
+  // 
+  // TBranch *b_HLT_isFired;
+  // 
+  // TBranch                             *b_passFilter_HBHE; //!
+  // TBranch                             *b_passFilter_CSCHalo; //!
+  // TBranch                             *b_passFilter_GoodVtx; //!
+  // TBranch                             *b_passFilter_EEBadSc; //!
+  // 
+  // int                             genJetAK4_N             ;
+  // std::vector<float>              *genJetAK4_pt=0         ;
+  // std::vector<float>              *genJetAK4_eta=0         ;
+  // std::vector<float>              *genJetAK4_phi=0         ;
+  // std::vector<float>              *genJetAK4_e=0         ;
+  // 
+  // float  genWeight;
+  // 
+  // TBranch *b_genJetAK4_N; //!
+  // TBranch *b_genJetAK4_pt; //!
+  // TBranch *b_genJetAK4_eta; //!
+  // TBranch *b_genJetAK4_phi; //!
+  // TBranch *b_genJetAK4_e; //!
+  // TBranch *b_genWeight; //!
+
+  float jetAK4_pt1,jetAK4_pt2,jetAK4_pt3;
+  float jetAK4_eta1,jetAK4_eta2,jetAK4_eta3;
+  float jetAK4_phi1,jetAK4_phi2,jetAK4_phi3;
+  float jetAK4_y1,jetAK4_y2,jetAK4_y3;
+  float jetAK4_mass1,jetAK4_mass2,jetAK4_mass3;  
+  //float jetAK4_IDLoose1,jetAK4_IDLoose2,jetAK4_IDLoose3;
+  float jetAK4_IDTight1,jetAK4_IDTight2,jetAK4_IDTight3;
+
+  float genJetAK4_pt1,genJetAK4_pt2,genJetAK4_pt3;
+  float genJetAK4_eta1,genJetAK4_eta2,genJetAK4_eta3;
+  float genJetAK4_phi1,genJetAK4_phi2,genJetAK4_phi3;
+  float genJetAK4_y1,genJetAK4_y2,genJetAK4_y3;
+  float genJetAK4_mass1,genJetAK4_mass2,genJetAK4_mass3;  
+
+  TBranch *b_jetAK4_pt1; //!
+  TBranch *b_jetAK4_eta1; //!
+  TBranch *b_jetAK4_phi1; //!
+  TBranch *b_jetAK4_y1; //!
+  TBranch *b_jetAK4_mass1; //!
+  //TBranch *b_jetAK4_IDLoose1; //!
+  TBranch *b_jetAK4_IDTight1; //!
+
+  TBranch *b_jetAK4_pt2; //!
+  TBranch *b_jetAK4_eta2; //!
+  TBranch *b_jetAK4_phi2; //!
+  TBranch *b_jetAK4_y2; //!
+  TBranch *b_jetAK4_mass2; //!
+  //TBranch *b_jetAK4_IDLoose2; //!
+  TBranch *b_jetAK4_IDTight2; //!
+
+  TBranch *b_jetAK4_pt3; //!
+  TBranch *b_jetAK4_eta3; //!
+  TBranch *b_jetAK4_phi3; //!
+  TBranch *b_jetAK4_y3; //!
+  TBranch *b_jetAK4_mass3; //!  
+  //TBranch *b_jetAK4_IDLoose3; //!
+  TBranch *b_jetAK4_IDTight3; //!  
+
+  TBranch *b_genJetAK4_pt1; //!
+  TBranch *b_genJetAK4_eta1; //!
+  TBranch *b_genJetAK4_phi1; //!
+  TBranch *b_genJetAK4_y1; //!
+  TBranch *b_genJetAK4_mass1; //!
+
+  TBranch *b_genJetAK4_pt2; //!
+  TBranch *b_genJetAK4_eta2; //!
+  TBranch *b_genJetAK4_phi2; //!
+  TBranch *b_genJetAK4_y2; //!
+  TBranch *b_genJetAK4_mass2; //!
+
+  TBranch *b_genJetAK4_pt3; //!
+  TBranch *b_genJetAK4_eta3; //!
+  TBranch *b_genJetAK4_phi3; //!
+  TBranch *b_genJetAK4_y3; //!
+  TBranch *b_genJetAK4_mass3; //!
 
   std::map<std::string,bool> *HLT_isFired=0;
-  
-  Bool_t                            passFilter_HBHE_=0;
-  Bool_t                            passFilter_CSCHalo_=0;
-  Bool_t                            passFilter_GoodVtx_=0;
-  Bool_t                            passFilter_EEBadSc_=0;
-  
-  TBranch *b_jetAK4_N; //!
-  TBranch *b_jetAK4_pt; //!
-  TBranch *b_jetAK4_eta; //!
-  TBranch *b_jetAK4_phi; //!
-  TBranch *b_jetAK4_e; //!
-  TBranch *b_jetAK4_IDLoose; //!
-  TBranch *b_jetAK4_IDTight; //!
-
   TBranch *b_HLT_isFired;
   
-  TBranch                             *b_passFilter_HBHE; //!
-  TBranch                             *b_passFilter_CSCHalo; //!
-  TBranch                             *b_passFilter_GoodVtx; //!
-  TBranch                             *b_passFilter_EEBadSc; //!
-
-  int                             genJetAK4_N             ;
-  std::vector<float>              *genJetAK4_pt=0         ;
-  std::vector<float>              *genJetAK4_eta=0         ;
-  std::vector<float>              *genJetAK4_phi=0         ;
-  std::vector<float>              *genJetAK4_e=0         ;
-  
-  TBranch *b_genJetAK4_N; //!
-  TBranch *b_genJetAK4_pt; //!
-  TBranch *b_genJetAK4_eta; //!
-  TBranch *b_genJetAK4_phi; //!
-  TBranch *b_genJetAK4_e; //!
-
+  float  genWeight;
+  TBranch *b_genWeight; //!
+ 
 /*------------------------EVENT infos-------------------------*/    
   int                               EVENT_event            ;
   int                               EVENT_run              ;
@@ -93,60 +158,89 @@ void ChiNtuple::Loop(){
   
   TBranch *b_EVENT_event, *b_EVENT_run, *b_EVENT_lumiBlock; //!
   
-  fChain->SetBranchAddress("jetAK4_N",   &jetAK4_N,   &b_jetAK4_N);
-  fChain->SetBranchAddress("jetAK4_pt",  &jetAK4_pt,  &b_jetAK4_pt);
-  fChain->SetBranchAddress("jetAK4_eta", &jetAK4_eta, &b_jetAK4_eta);
-  fChain->SetBranchAddress("jetAK4_phi", &jetAK4_phi, &b_jetAK4_phi);
-  fChain->SetBranchAddress("jetAK4_e",   &jetAK4_e,   &b_jetAK4_e);
-  fChain->SetBranchAddress("jetAK4_IDLoose",   &jetAK4_IDLoose,   &b_jetAK4_IDLoose);
-  fChain->SetBranchAddress("jetAK4_IDTight",   &jetAK4_IDTight,   &b_jetAK4_IDTight);
+  // fChain->SetBranchAddress("jetAK4_N",   &jetAK4_N,   &b_jetAK4_N);
+  fChain->SetBranchAddress("jetAK4_pt1",  &jetAK4_pt1,  &b_jetAK4_pt1);
+  fChain->SetBranchAddress("jetAK4_pt2",  &jetAK4_pt2,  &b_jetAK4_pt2);
+  fChain->SetBranchAddress("jetAK4_pt3",  &jetAK4_pt3,  &b_jetAK4_pt3);
+  fChain->SetBranchAddress("jetAK4_eta1", &jetAK4_eta1,&b_jetAK4_eta1);
+  fChain->SetBranchAddress("jetAK4_eta2", &jetAK4_eta2,&b_jetAK4_eta2);
+  fChain->SetBranchAddress("jetAK4_eta3", &jetAK4_eta3,&b_jetAK4_eta3);
+  fChain->SetBranchAddress("jetAK4_phi1", &jetAK4_phi1, &b_jetAK4_phi1);
+  fChain->SetBranchAddress("jetAK4_phi2", &jetAK4_phi2, &b_jetAK4_phi2);
+  fChain->SetBranchAddress("jetAK4_phi3", &jetAK4_phi3, &b_jetAK4_phi3);
+  fChain->SetBranchAddress("jetAK4_y1",   &jetAK4_y1,   &b_jetAK4_y1);
+  fChain->SetBranchAddress("jetAK4_y2",   &jetAK4_y2,   &b_jetAK4_y2);
+  fChain->SetBranchAddress("jetAK4_y3",   &jetAK4_y3,   &b_jetAK4_y3);
+  fChain->SetBranchAddress("jetAK4_mass1",   &jetAK4_mass1,   &b_jetAK4_mass1);
+  fChain->SetBranchAddress("jetAK4_mass2",   &jetAK4_mass2,   &b_jetAK4_mass2);
+  fChain->SetBranchAddress("jetAK4_mass3",   &jetAK4_mass3,   &b_jetAK4_mass3);  
+  //fChain->SetBranchAddress("jetAK4_IDLoose1",   &jetAK4_IDLoose1,   &b_jetAK4_IDLoose1);
+  //fChain->SetBranchAddress("jetAK4_IDLoose2",   &jetAK4_IDLoose2,   &b_jetAK4_IDLoose2);
+  //fChain->SetBranchAddress("jetAK4_IDLoose3",   &jetAK4_IDLoose3,   &b_jetAK4_IDLoose3);
+  fChain->SetBranchAddress("jetAK4_IDTight1",   &jetAK4_IDTight1,   &b_jetAK4_IDTight1);
+  fChain->SetBranchAddress("jetAK4_IDTight2",   &jetAK4_IDTight2,   &b_jetAK4_IDTight2);
+  fChain->SetBranchAddress("jetAK4_IDTight3",   &jetAK4_IDTight3,   &b_jetAK4_IDTight3);  
 
   fChain->SetBranchAddress("HLT_isFired",   &HLT_isFired,   &b_HLT_isFired);
   
-  fChain->SetBranchAddress("passFilter_HBHE",      &passFilter_HBHE_,      &b_passFilter_HBHE);
-  fChain->SetBranchAddress("passFilter_CSCHalo",   &passFilter_CSCHalo_,   &b_passFilter_CSCHalo);
-  fChain->SetBranchAddress("passFilter_GoodVtx",   &passFilter_GoodVtx_,   &b_passFilter_GoodVtx);
-  fChain->SetBranchAddress("passFilter_EEBadSc",   &passFilter_EEBadSc_,   &b_passFilter_EEBadSc);  
+  // fChain->SetBranchAddress("passFilter_HBHE",      &passFilter_HBHE_,      &b_passFilter_HBHE);
+  // fChain->SetBranchAddress("passFilter_CSCHalo",   &passFilter_CSCHalo_,   &b_passFilter_CSCHalo);
+  // fChain->SetBranchAddress("passFilter_GoodVtx",   &passFilter_GoodVtx_,   &b_passFilter_GoodVtx);
+  // fChain->SetBranchAddress("passFilter_EEBadSc",   &passFilter_EEBadSc_,   &b_passFilter_EEBadSc);  
   
   if (!IsData){
     std::cout << "Setting Branch Address" << std::endl;
-    fChain->SetBranchAddress("genJetAK4_N",   &genJetAK4_N,   &b_genJetAK4_N);
-    fChain->SetBranchAddress("genJetAK4_pt",  &genJetAK4_pt,  &b_genJetAK4_pt);
-    fChain->SetBranchAddress("genJetAK4_eta", &genJetAK4_eta, &b_genJetAK4_eta);
-    fChain->SetBranchAddress("genJetAK4_phi", &genJetAK4_phi, &b_genJetAK4_phi);
-    fChain->SetBranchAddress("genJetAK4_e",   &genJetAK4_e,   &b_genJetAK4_e);
+    // fChain->SetBranchAddress("genJetAK4_N",   &genJetAK4_N,   &b_genJetAK4_N);
+    fChain->SetBranchAddress("genJetAK4_pt1",  &genJetAK4_pt1,  &b_genJetAK4_pt1);
+    fChain->SetBranchAddress("genJetAK4_pt2",  &genJetAK4_pt2,  &b_genJetAK4_pt2);
+    fChain->SetBranchAddress("genJetAK4_pt3",  &genJetAK4_pt3,  &b_genJetAK4_pt3);    
+    fChain->SetBranchAddress("genJetAK4_eta1", &genJetAK4_eta1, &b_genJetAK4_eta1);
+    fChain->SetBranchAddress("genJetAK4_eta2", &genJetAK4_eta2, &b_genJetAK4_eta2);
+    fChain->SetBranchAddress("genJetAK4_eta3", &genJetAK4_eta3, &b_genJetAK4_eta3);
+    fChain->SetBranchAddress("genJetAK4_phi1", &genJetAK4_phi1, &b_genJetAK4_phi1);
+    fChain->SetBranchAddress("genJetAK4_phi2", &genJetAK4_phi2, &b_genJetAK4_phi2);
+    fChain->SetBranchAddress("genJetAK4_phi3", &genJetAK4_phi3, &b_genJetAK4_phi3);
+    fChain->SetBranchAddress("genJetAK4_y1",   &genJetAK4_y1,   &b_genJetAK4_y1);
+    fChain->SetBranchAddress("genJetAK4_y2",   &genJetAK4_y2,   &b_genJetAK4_y2);
+    fChain->SetBranchAddress("genJetAK4_y3",   &genJetAK4_y3,   &b_genJetAK4_y3);
+    fChain->SetBranchAddress("genJetAK4_mass1",   &genJetAK4_mass1,   &b_genJetAK4_mass1);
+    fChain->SetBranchAddress("genJetAK4_mass2",   &genJetAK4_mass2,   &b_genJetAK4_mass2);
+    fChain->SetBranchAddress("genJetAK4_mass3",   &genJetAK4_mass3,   &b_genJetAK4_mass3);
+
+    fChain->SetBranchAddress("genWeight",   &genWeight,   &b_genWeight);    
   }
   fChain->SetBranchAddress("EVENT_event", &EVENT_event, &b_EVENT_event);
   fChain->SetBranchAddress("EVENT_run", &EVENT_run, &b_EVENT_run);
   fChain->SetBranchAddress("EVENT_lumiBlock", &EVENT_lumiBlock, &b_EVENT_lumiBlock);
 
-  fChain->SetBranchStatus("jetAK4_N",  1);
-  fChain->SetBranchStatus("jetAK4_pt", 1);
-  fChain->SetBranchStatus("jetAK4_eta",1);
-  fChain->SetBranchStatus("jetAK4_phi",1);
-  fChain->SetBranchStatus("jetAK4_e",  1);
-  fChain->SetBranchStatus("jetAK4_IDLoose",  1);
-  fChain->SetBranchStatus("jetAK4_IDTight",  1);
+  // fChain->SetBranchStatus("jetAK4_N",  1);
+  // fChain->SetBranchStatus("jetAK4_pt", 1);
+  // fChain->SetBranchStatus("jetAK4_eta",1);
+  // fChain->SetBranchStatus("jetAK4_phi",1);
+  // fChain->SetBranchStatus("jetAK4_e",  1);
+  // fChain->SetBranchStatus("jetAK4_IDLoose",  1);
+  // fChain->SetBranchStatus("jetAK4_IDTight",  1);
 
-  fChain->SetBranchStatus("HLT_isFired",  1);
+  //fChain->SetBranchStatus("HLT_isFired",  1);
   
-  fChain->SetBranchStatus("passFilter_HBHE",      1);
-  fChain->SetBranchStatus("passFilter_CSCHalo",   1);
-  fChain->SetBranchStatus("passFilter_GoodVtx",   1);
-  fChain->SetBranchStatus("passFilter_EEBadSc",   1);
+  // fChain->SetBranchStatus("passFilter_HBHE",      1);
+  // fChain->SetBranchStatus("passFilter_CSCHalo",   1);
+  // fChain->SetBranchStatus("passFilter_GoodVtx",   1);
+  // fChain->SetBranchStatus("passFilter_EEBadSc",   1);
 
   if (!IsData){
     std::cout << "Setting Branch Status" << std::endl;
-    fChain->SetBranchStatus("genJetAK4_N",  1);
-    fChain->SetBranchStatus("genJetAK4_pt", 1);
-    fChain->SetBranchStatus("genJetAK4_eta",1);
-    fChain->SetBranchStatus("genJetAK4_phi",1);
-    fChain->SetBranchStatus("genJetAK4_e",  1);
+    // fChain->SetBranchStatus("genJetAK4_N",  1);
+    // fChain->SetBranchStatus("genJetAK4_pt", 1);
+    // fChain->SetBranchStatus("genJetAK4_eta",1);
+    // fChain->SetBranchStatus("genJetAK4_phi",1);
+    // fChain->SetBranchStatus("genJetAK4_e",  1);
+    // fChain->SetBranchStatus("genWeight",  1);    
   }
   
-  fChain->SetBranchStatus("EVENT_event",1);
-  fChain->SetBranchStatus("EVENT_run",1);
-  fChain->SetBranchStatus("EVENT_lumiBlock",1);
+  //fChain->SetBranchStatus("EVENT_event",1);
+  //fChain->SetBranchStatus("EVENT_run",1);
+  //fChain->SetBranchStatus("EVENT_lumiBlock",1);
   
   int nevents(0);
   if (Nevts>0){
@@ -157,7 +251,10 @@ void ChiNtuple::Loop(){
 
   cout << "Number of events: " << nevents << endl;  
   
-  std::vector<string> htBins, ptBins, mBins;
+  std::vector<string> htBins, ptBins, mBins,flatBins;
+
+  flatBins.push_back("flatQCD");
+  
   htBins.push_back("HT300to500");
   htBins.push_back("HT500to700");
   htBins.push_back("HT700to1000");
@@ -226,6 +323,21 @@ void ChiNtuple::Loop(){
   MBin=mBin;
 
 
+  int flatBin=-1;
+  for (uint i=0; i<flatBins.size(); ++ i){
+    string stringToFind= flatBins.at(i) ;
+    std::size_t found = outName.find(stringToFind);
+    if (found != std::string::npos){
+      flatBin=i;
+      break;
+    }
+  }
+  if (flatBin==-1 && !IsData){
+    std::cout << "Flat QCD Bin not found in output file name"  << std::endl;
+  }
+  FlatBin=flatBin;
+  
+
   std::vector<double>	genjet_energy(10,0);
   std::vector<double>	genjet_et(10,0);
   std::vector<double>	genjet_pt(10,0);
@@ -256,6 +368,7 @@ void ChiNtuple::Loop(){
       fillHist("evtsHT",float(HTBin),1.);
       fillHist("evtsM",float(MBin),1.);
       fillHist("evtsPT",float(PTBin),1.);
+      fillHist("evtsFLAT",float(FlatBin),1.);      
       
       fChain->GetEntry( iEvent );
       
@@ -263,20 +376,99 @@ void ChiNtuple::Loop(){
       //std::cout << "passFilter_CSCHalo\t" << passFilter_CSCHalo_ << std::endl;
       //std::cout << "passFilter_GoodVtx\t" << passFilter_GoodVtx_ << std::endl;
       //std::cout << "passFilter_EEBadSc\t" << passFilter_EEBadSc_ << std::endl;
+
+      /*
+      if (IsData and (not passFilter_HBHE_ or
+		      not passFilter_CSCHalo_ or
+		      not passFilter_GoodVtx_ or not passFilter_EEBadSc_)
+	  ) continue;
+      */
       
-      if (not passFilter_HBHE_ or
-      	  not passFilter_CSCHalo_ or
-      	  not passFilter_GoodVtx_ or not passFilter_EEBadSc_) continue;
       fillHist("counter",1.);              
       
       double evtweight(1.);
-      double weight=xsweight*evtweight;
-      XSweight=xsweight;
+      double xswght=xsweight;
+      if (fabs(xsweight - -1.)< 0.001) xswght=genWeight;
+      
+      double weight=xswght*evtweight;
+      XSweight=xswght;
       EVTweight=evtweight;
       Event=EVENT_event;
       Run=EVENT_run;
       Lumi=EVENT_lumiBlock;
 
+      //  update for reduced size ntuples
+      //int  jetAK4_N(0);
+      std::vector<float>              jetAK4_pt(0,0)         ;
+      std::vector<float>              jetAK4_eta(0,0)         ;
+      std::vector<float>              jetAK4_phi(0,0)         ;
+      std::vector<float>              jetAK4_e(0,0)         ;
+      //std::vector<bool>               jetAK4_IDLoose(0,0);
+      std::vector<bool>               jetAK4_IDTight(0,0);      
+
+      TLorentzVector tmpP4_1,tmpP4_2,tmpP4_3;
+      //int  jetAK4_N(0);      
+      if (jetAK4_pt1>0){
+	//jetAK4_N=1;
+	jetAK4_pt.push_back(jetAK4_pt1);
+	jetAK4_eta.push_back(jetAK4_eta1);
+	jetAK4_phi.push_back(jetAK4_phi1);
+	jetAK4_IDTight.push_back(jetAK4_IDTight1);
+	tmpP4_1.SetPtEtaPhiM(jetAK4_pt1,jetAK4_eta1,jetAK4_phi1,jetAK4_mass1);
+	jetAK4_e.push_back(tmpP4_1.Energy());
+	//std::cout << "CCLA: " << jetAK4_y1 << "\t" << tmpP4_1.Rapidity() << std::endl;
+      }
+      if (jetAK4_pt2>0){
+	//jetAK4_N=2;
+	jetAK4_pt.push_back(jetAK4_pt2);
+	jetAK4_eta.push_back(jetAK4_eta2);
+	jetAK4_phi.push_back(jetAK4_phi2);	
+	jetAK4_IDTight.push_back(jetAK4_IDTight2);
+	tmpP4_2.SetPtEtaPhiM(jetAK4_pt2,jetAK4_eta2,jetAK4_phi2,jetAK4_mass2);
+	jetAK4_e.push_back(tmpP4_2.Energy());	
+      }      
+      if (jetAK4_pt3>0){
+	//jetAK4_N=3;
+	jetAK4_pt.push_back(jetAK4_pt3);
+	jetAK4_eta.push_back(jetAK4_eta3);
+	jetAK4_phi.push_back(jetAK4_phi3);
+	jetAK4_IDTight.push_back(jetAK4_IDTight3);
+	tmpP4_3.SetPtEtaPhiM(jetAK4_pt3,jetAK4_eta3,jetAK4_phi3,jetAK4_mass3);
+	jetAK4_e.push_back(tmpP4_3.Energy());	
+      }
+
+      int  genJetAK4_N(0);
+      std::vector<float>              genJetAK4_pt(0,0)         ;
+      std::vector<float>              genJetAK4_eta(0,0)         ;
+      std::vector<float>              genJetAK4_phi(0,0)         ;
+      std::vector<float>              genJetAK4_e(0,0)         ;
+
+      if (genJetAK4_pt1>0){
+	genJetAK4_N=1;
+	genJetAK4_pt.push_back(genJetAK4_pt1);
+	genJetAK4_eta.push_back(genJetAK4_eta1);
+	genJetAK4_phi.push_back(genJetAK4_phi1);
+	tmpP4_1.SetPtEtaPhiM(genJetAK4_pt1,genJetAK4_eta1,genJetAK4_phi1,genJetAK4_mass1);
+	genJetAK4_e.push_back(tmpP4_1.Energy());	
+      }
+      if (genJetAK4_pt2>0){
+	genJetAK4_N=2;
+	genJetAK4_pt.push_back(genJetAK4_pt2);
+	genJetAK4_eta.push_back(genJetAK4_eta2);
+	genJetAK4_phi.push_back(genJetAK4_phi2);	
+	tmpP4_2.SetPtEtaPhiM(genJetAK4_pt2,genJetAK4_eta2,genJetAK4_phi2,genJetAK4_mass2);
+	genJetAK4_e.push_back(tmpP4_2.Energy());	
+      }      
+      if (genJetAK4_pt3>0){
+	genJetAK4_N=3;
+	genJetAK4_pt.push_back(genJetAK4_pt3);
+	genJetAK4_eta.push_back(genJetAK4_eta3);
+	genJetAK4_phi.push_back(genJetAK4_phi3);
+	tmpP4_3.SetPtEtaPhiM(genJetAK4_pt3,genJetAK4_eta3,genJetAK4_phi3,genJetAK4_mass3);
+	genJetAK4_e.push_back(tmpP4_3.Energy());	
+      }
+      //
+      
       double initval=-999.;
       recoDijets.dijetFlag=0;
       recoDijets.mass=initval;
@@ -369,9 +561,9 @@ void ChiNtuple::Loop(){
       }
       
       int ngenJets=0;
-      if (!IsData) ngenJets=genJetAK4_pt->size();
+      if (!IsData) ngenJets=genJetAK4_pt.size();
       
-      int njets=jetAK4_pt->size();      
+      int njets=jetAK4_pt.size();      
       
       smrjet_energy.clear();
       smrjet_et.clear();
@@ -384,8 +576,8 @@ void ChiNtuple::Loop(){
       vector<TLorentzVector> smearedJets;
       if (!IsData and ngenJets>0 and genJetAK4_N>0){
 	for (int genj=0; genj<ngenJets; ++ genj){	
-	  double genpt=genJetAK4_pt->at(genj);
-	  double geneta=genJetAK4_eta->at(genj);
+	  double genpt=genJetAK4_pt.at(genj);
+	  double geneta=genJetAK4_eta.at(genj);
 	  double fact=1.;
 	  if (genpt >50.){
 	    if (doGaussian){
@@ -424,7 +616,7 @@ void ChiNtuple::Loop(){
 	  }
 	  
 	  TLorentzVector jetP4,smrP4;
-	  jetP4.SetPtEtaPhiE(genJetAK4_pt->at(genj),genJetAK4_eta->at(genj),genJetAK4_phi->at(genj),genJetAK4_e->at(genj));	  
+	  jetP4.SetPtEtaPhiE(genJetAK4_pt.at(genj),genJetAK4_eta.at(genj),genJetAK4_phi.at(genj),genJetAK4_e.at(genj));	  
 	  
 	  //std::cout << "Rapidities: " << genjet_rapidity[genj] << " " << jetP4.Rapidity() << std::endl;
 	  double px=jetP4.Px();
@@ -465,8 +657,8 @@ void ChiNtuple::Loop(){
       bool selectReco=false;
       if (njets>1){
 	TLorentzVector Jet1,Jet2;
-	Jet1.SetPtEtaPhiE(jetAK4_pt->at(0),jetAK4_eta->at(0),jetAK4_phi->at(0),jetAK4_e->at(0));
-	Jet2.SetPtEtaPhiE(jetAK4_pt->at(1),jetAK4_eta->at(1),jetAK4_phi->at(1),jetAK4_e->at(1));
+	Jet1.SetPtEtaPhiE(jetAK4_pt.at(0),jetAK4_eta.at(0),jetAK4_phi.at(0),jetAK4_e.at(0));
+	Jet2.SetPtEtaPhiE(jetAK4_pt.at(1),jetAK4_eta.at(1),jetAK4_phi.at(1),jetAK4_e.at(1));
 	
 	selectReco=(
 		    (Jet1.Pt()>30) &&
@@ -475,8 +667,8 @@ void ChiNtuple::Loop(){
 		    (fabs(Jet2.Rapidity())<2.5) &&
 		    (fabs(Jet1.Rapidity()+Jet2.Rapidity())/2.<1.11) &&
 		    (exp(fabs(Jet1.Rapidity()-Jet2.Rapidity()))<16) &&	  
-		    (jetAK4_IDTight->at(0)==1) &&
-		    (jetAK4_IDTight->at(1)==1)
+		    (jetAK4_IDTight.at(0)==1) &&
+		    (jetAK4_IDTight.at(1)==1)
 		    );
 	if (selectReco){	     
 	    
@@ -551,8 +743,8 @@ void ChiNtuple::Loop(){
       bool selectGen=false;
       if (!IsData && ngenJets>1){
 	TLorentzVector Jet1,Jet2;
-	Jet1.SetPtEtaPhiE(genJetAK4_pt->at(0),genJetAK4_eta->at(0),genJetAK4_phi->at(0),genJetAK4_e->at(0));
-	Jet2.SetPtEtaPhiE(genJetAK4_pt->at(1),genJetAK4_eta->at(1),genJetAK4_phi->at(1),genJetAK4_e->at(1));
+	Jet1.SetPtEtaPhiE(genJetAK4_pt.at(0),genJetAK4_eta.at(0),genJetAK4_phi.at(0),genJetAK4_e.at(0));
+	Jet2.SetPtEtaPhiE(genJetAK4_pt.at(1),genJetAK4_eta.at(1),genJetAK4_phi.at(1),genJetAK4_e.at(1));
 	selectGen=(
 		   (Jet1.Pt()>30) &&
 		   (Jet2.Pt()>30) &&		     
@@ -652,19 +844,19 @@ void ChiNtuple::Loop(){
 	for (int genj=0; genj<ngenJets; ++ genj){
 	  if (genj>1)break;
 	  
-	  double genpt=genJetAK4_pt->at(genj);
+	  double genpt=genJetAK4_pt.at(genj);
 	  if (genpt > 50.){
 	    TLorentzVector GJet;
-	    GJet.SetPtEtaPhiE(genJetAK4_pt->at(genj),genJetAK4_eta->at(genj),genJetAK4_phi->at(genj),genJetAK4_e->at(genj));
+	    GJet.SetPtEtaPhiE(genJetAK4_pt.at(genj),genJetAK4_eta.at(genj),genJetAK4_phi.at(genj),genJetAK4_e.at(genj));
 	    double geny=GJet.Rapidity();
 	    double genphi=GJet.Phi();
 	
 	    // loop over recojets; find best match
 	    double drmin=99.;
 	    int indx_m=-1.;
-	    for (uint recj=0; recj<jetAK4_pt->size(); ++ recj){
+	    for (uint recj=0; recj<jetAK4_pt.size(); ++ recj){
 	      TLorentzVector RJet;
-	      RJet.SetPtEtaPhiE(jetAK4_pt->at(recj),jetAK4_eta->at(recj),jetAK4_phi->at(recj),jetAK4_e->at(recj));
+	      RJet.SetPtEtaPhiE(jetAK4_pt.at(recj),jetAK4_eta.at(recj),jetAK4_phi.at(recj),jetAK4_e.at(recj));
 	      double dr=deltaR(geny,genphi,RJet.Rapidity(),RJet.Phi());
 	      if (dr<drmin) {
 		drmin=dr;
@@ -672,7 +864,7 @@ void ChiNtuple::Loop(){
 	      }
 	    }//end of loop over reco jets
 	    if (drmin<0.25){
-	      double recpt=jetAK4_pt->at(indx_m);
+	      double recpt=jetAK4_pt.at(indx_m);
 	      double rat=recpt/genpt;
 
 	      double tpt=genpt;

@@ -422,15 +422,15 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   m_HistNames[hname] =  Book1dHist(hname, htitle, njr, jrmin, jrmax, true );
   
   hname="Resp3D"; htitle="Jet response vs pt,y";
-  m_HistNames3D[hname]=Book3dHist(hname, htitle, 300, 0. ,3000., neta, etamin, etamax, njr, jrmin, jrmax, true);
+  m_HistNames3D[hname]=Book3dHist(hname, htitle, 300, 0. ,3500., neta, etamin, etamax, njr, jrmin, jrmax, true);
 
   hname="SmrResp3D"; htitle="Smeared Jet response vs pt,y";
-  m_HistNames3D[hname]=Book3dHist(hname, htitle, 300, 0. ,3000., neta, etamin, etamax, njr, jrmin, jrmax, true);
+  m_HistNames3D[hname]=Book3dHist(hname, htitle, 300, 0. ,3500., neta, etamin, etamax, njr, jrmin, jrmax, true);
 
   Float_t mbins1[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,13000};
   Int_t  nmbins1 = sizeof(mbins1)/sizeof(Float_t) - 1;
 
-  Float_t mbins2[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,5400,6000,8000,10000,13000};
+  Float_t mbins2[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,5400,6000,13000};
   Int_t  nmbins2 = sizeof(mbins2)/sizeof(Float_t) - 1;
   
   Float_t chibins1[] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
@@ -463,7 +463,6 @@ void ChiNtuple::BookHistograms(const std::string & fname){
 
   for ( Int_t j = 0; j < (nchibins4+1); ++j )
     chiBins4.push_back(chibins4[j]);
-
   
   dijet_mass1_chi1 = new TH2F("dijet_mass1_chi1","M_{jj} vs #chi",nmbins1,mbins1,nchibins1,chibins1);
   dijet_mass1_chi2 = new TH2F("dijet_mass1_chi2","M_{jj} vs #chi",nmbins1,mbins1,nchibins2,chibins2);
@@ -496,23 +495,23 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   Hlist->Add(dijet_mass2_chi3);        
   Hlist->Add(dijet_mass2_chi4);        
 
-  for ( size_t j = 0; j < (massBins1.size()-1); ++j )
+  for ( size_t j = 0; j < (massBins2.size()-1); ++j )
   {
       std::stringstream name;
-      name << "dijet_" << massBins1[j] << "_" << massBins1[j+1] << "_" << "chi";
+      name << "dijet_" << massBins2[j] << "_" << massBins2[j+1] << "_" << "chi";
       hists.push_back(new TH1F(name.str().c_str(),name.str().c_str(),15,1,16));
       hists[j]->Sumw2();
       Hlist->Add(hists[j]);
 
       if (!IsData){
 	std::stringstream gname;
-	gname << "dijet_" << massBins1[j] << "_" << massBins1[j+1] << "_" << "chi_gen";
+	gname << "dijet_" << massBins2[j] << "_" << massBins2[j+1] << "_" << "chi_gen";
 	ghists.push_back(new TH1F(gname.str().c_str(),gname.str().c_str(),15,1,16));
 	ghists[j]->Sumw2();
 	Hlist->Add(ghists[j]);
 
 	std::stringstream sname;	
-	sname << "dijet_" << massBins1[j] << "_" << massBins1[j+1] << "_" << "chi_smr";
+	sname << "dijet_" << massBins2[j] << "_" << massBins2[j+1] << "_" << "chi_smr";
 	shists.push_back(new TH1F(sname.str().c_str(),sname.str().c_str(),15,1,16));
 	shists[j]->Sumw2();
 	Hlist->Add(shists[j]);
@@ -523,7 +522,7 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   {
       std::stringstream name;
       name << "dijet_" << chiBins1[j] << "_chi1_" << chiBins1[j+1] << "_" << "mass1";
-      mhists.push_back(new TH1F(name.str().c_str(),name.str().c_str(),nmbins1,mbins1));
+      mhists.push_back(new TH1F(name.str().c_str(),name.str().c_str(),nmbins2,mbins2));
       mhists[j]->Sumw2();
       Hlist->Add(mhists[j]);
   }

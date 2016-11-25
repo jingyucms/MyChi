@@ -42,7 +42,8 @@ double fnc_dscb(double*xx,double*pp)
 class MyJetResponse {
  public:
  MyJetResponse(bool AK4_SF=false, bool DATAtoMC_SF=false, int SYSUNC=0) : ak4_sf(AK4_SF), datamc_sf(DATAtoMC_SF), sysunc(SYSUNC) {}
-    double doGaussianSmearing(double pt,double eta){
+  
+  double doGaussianSmearing(double pt,double eta){
 
     double fact;
   
@@ -59,8 +60,10 @@ class MyJetResponse {
     if (ak4_sf) sigma=sigma*ak4_scalefact(x);
     if (datamc_sf) sigma=sigma*DataToMC_scalefact(eta);
 
-    if (sysunc == 1) sigma  = sigma*(1 + 0.1);
-    if (sysunc == -1) sigma = sigma*(1 - 0.1);
+    // if (sysunc == 1) sigma  = sigma*(1 + 0.1);
+    // if (sysunc == -1) sigma = sigma*(1 - 0.1);
+    if (sysunc == 1) sigma  = sigma*(1 + DataToMC_scalefactorUncert(eta));
+    if (sysunc == -1) sigma = sigma*(1 - DataToMC_scalefactorUncert(eta));
     
     double r = rnd.Gaus(mean,sigma);
   
@@ -111,8 +114,10 @@ class MyJetResponse {
     if (ak4_sf) sigma=sigma*ak4_scalefact(x);    
     if (datamc_sf) sigma=sigma*DataToMC_scalefact(eta);
 
-    if (sysunc == 1) sigma  = sigma*(1 + 0.1);
-    if (sysunc == -1) sigma = sigma*(1 - 0.1);
+    // if (sysunc == 1) sigma  = sigma*(1 + 0.1);
+    // if (sysunc == -1) sigma = sigma*(1 - 0.1);
+    if (sysunc == 1) sigma  = sigma*(1 + DataToMC_scalefactorUncert(eta));
+    if (sysunc == -1) sigma = sigma*(1 - DataToMC_scalefactorUncert(eta));
     
     TF1 *f1 = new TF1("f1",fnc_dscb,0.,5.,7);
     f1->SetParameter(0,1.);
@@ -288,8 +293,13 @@ class MyJetResponse {
     // fact=0.99601+0.000241919*xx;
 
     // 76x smearing
-    if (xx<300) xx=300;
-    if (xx>2000.)xx=2000;
+    // if (xx<300) xx=300;
+    // if (xx>2000.)xx=2000;
+    // fact=1.38043e+00*TMath::TanH(3.45865e-04*(xx-(-2.06310e+03)));
+
+    // 80x smearing
+    if (xx<500) xx=500;
+    if (xx>1000.)xx=900;
     fact=1.38043e+00*TMath::TanH(3.45865e-04*(xx-(-2.06310e+03)));
     
     // std::cout << "AK4_Scalefact: " << "pt: " << x << "\t" << fact << std::endl;
@@ -319,42 +329,117 @@ class MyJetResponse {
   //   return fact;
   // }
   // new scale factors for 76x
+//   double DataToMC_scalefact(double xx){
+//     double fact(1.);
+// 
+//     double eta=fabs(xx);
+// 
+//     if (eta < 0.5) {
+//       fact=1.095;
+//     }
+//     else if (eta < 0.8) {
+//       fact=1.120;
+//     }
+//     else if (eta < 1.1) {
+//       fact=1.097;
+//     }
+//     else if (eta < 1.3) {
+//       fact=1.103;
+//     }
+//     else if (eta < 1.7) {
+//       fact=1.118;
+//     }
+//     else if (eta < 1.9) {
+//       fact=1.100;
+//     }
+//     else if (eta < 2.1) {
+//       fact=1.162;
+//     }
+//     else if (eta < 2.3) {
+//       fact=1.160;
+//     }
+//     else if (eta < 2.5) {
+//       fact=1.161;
+//     }
+//     
+//     // std::cout << "DataToMC_Scalefact: " << fact << std::endl;
+//     return fact;
+//   }  
+// 
+  // new scale factors for 80x
   double DataToMC_scalefact(double xx){
     double fact(1.);
 
     double eta=fabs(xx);
 
     if (eta < 0.5) {
-      fact=1.095;
+      fact=1.122;
     }
     else if (eta < 0.8) {
-      fact=1.120;
+      fact=1.167;
     }
     else if (eta < 1.1) {
-      fact=1.097;
+      fact=1.168;
     }
     else if (eta < 1.3) {
-      fact=1.103;
+      fact=1.029;
     }
     else if (eta < 1.7) {
-      fact=1.118;
+      fact=1.115;
     }
     else if (eta < 1.9) {
-      fact=1.100;
+      fact=1.041;
     }
     else if (eta < 2.1) {
-      fact=1.162;
+      fact=1.167;
     }
     else if (eta < 2.3) {
-      fact=1.160;
+      fact=1.094;
     }
     else if (eta < 2.5) {
-      fact=1.161;
+      fact=1.168;
     }
     
     // std::cout << "DataToMC_Scalefact: " << fact << std::endl;
     return fact;
-  }  
+  }
+
+  double DataToMC_scalefactorUncert(double xx){
+    double fact(1.);
+
+    double eta=fabs(xx);
+
+    if (eta < 0.5) {
+      fact=0.026;
+    }
+    else if (eta < 0.8) {
+      fact=0.048;
+    }
+    else if (eta < 1.1) {
+      fact=0.046;
+    }
+    else if (eta < 1.3) {
+      fact=0.066;
+    }
+    else if (eta < 1.7) {
+      fact=0.03;
+    }
+    else if (eta < 1.9) {
+      fact=0.062;
+    }
+    else if (eta < 2.1) {
+      fact=0.086;
+    }
+    else if (eta < 2.3) {
+      fact=0.093;
+    }
+    else if (eta < 2.5) {
+      fact=0.120;
+    }
+    
+    // std::cout << "DataToMC_Scalefact: " << fact << std::endl;
+    return fact;
+  }
 
   
   int WhichEtaBin(double eta, const std::vector<double> etaMinBins, const std::vector<double> etaMaxBins){

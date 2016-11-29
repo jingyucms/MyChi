@@ -727,10 +727,10 @@ void ChiNtuple::Loop(){
 	      }
 	  }
 	  
-          for ( size_t j = 0; j < (massBins1.size()-1); ++j )
+          for ( size_t j = 0; j < (massBins2.size()-1); ++j )
           {
-              if((DijetMass>=massBins1[j])&&
-	         (DijetMass<massBins1[j+1]))
+              if((DijetMass>=massBins2[j])&&
+	         (DijetMass<massBins2[j+1]))
               {
                   hists[j]->Fill(DijetChi, wt);
 	      }
@@ -771,10 +771,10 @@ void ChiNtuple::Loop(){
 	  genDijets.phi2=Jet2.Phi();
 	  genDijets.e2=  Jet2.Energy();
 
-          for ( size_t j = 0; j < (massBins1.size()-1); ++j )
+          for ( size_t j = 0; j < (massBins2.size()-1); ++j )
           {
-              if((DijetMass>=massBins1[j])&&
-	         (DijetMass<massBins1[j+1]))
+              if((DijetMass>=massBins2[j])&&
+	         (DijetMass<massBins2[j+1]))
               {
                   ghists[j]->Fill(genDijets.chi, weight);
 	      }
@@ -831,10 +831,10 @@ void ChiNtuple::Loop(){
 	    smrDijets.phi2=smrjet_phi[i2];
 	    smrDijets.e2=  smrjet_energy[i2];
 
-	    for ( size_t j = 0; j < (massBins1.size()-1); ++j )
+	    for ( size_t j = 0; j < (massBins2.size()-1); ++j )
 	      {
-		if((DijetMass>=massBins1[j])&&
-		   (DijetMass<massBins1[j+1]))
+		if((DijetMass>=massBins2[j])&&
+		   (DijetMass<massBins2[j+1]))
 		    {
 		      shists[j]->Fill(smrDijets.chi, weight);
 		    }

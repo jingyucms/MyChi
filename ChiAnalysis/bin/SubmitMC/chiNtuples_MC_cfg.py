@@ -21,7 +21,7 @@ PtBins={"Pt_170to300":117276.0,
         "HT1000to1500":1207.0,
         "HT1500to2000":119.9,
         "HT2000toInf":25.24,
-        "flatQCD":-1.0
+        "flatPythia8":-1.0
 }
 theBins=PtBins.keys()
 ## print len(theBins),theBins
@@ -35,12 +35,13 @@ DATATOMC=os.environ['DATATOMC']
 SYSERR=os.environ['SYSERR']
 GENERATOR=os.environ['GENERATOR']
 
-## jobNum="0"
-## SMRMAX=0 ## only used for CB smearing
-## thePTBin="HT2000toInf"
-## AK4SF="0"
+## jobNum="8"
+## SMRMAX=2     ## only used for CB smearing
+## thePTBin="flatPythia8"
+## AK4SF="1"
 ## DATATOMC="0"
 ## SYSERR="0"
+## GENERATOR="flatPythia8"
 
 ## thePTBin="Pt_300to470"
 ## thePTBin="Pt_470to600"
@@ -77,6 +78,8 @@ if GENERATOR=="pythia8":
     ntuples="filelists/pythia8_newJES/ntuples_"+ thePTBin +"_"+jobNum+".list"
 elif GENERATOR=="25nsMC10":
     ntuples="filelists/25nsMC10/ntuples_"+jobNum+".list"
+elif GENERATOR=="flatPythia8":
+    ntuples="filelists/flatPythia8/ntuples_"+jobNum+".list"
 else:
     ntuples="filelists/madgraphMLM_newJES/ntuples_"+ thePTBin +"_"+jobNum+".list"
 

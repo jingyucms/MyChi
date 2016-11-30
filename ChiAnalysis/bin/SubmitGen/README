@@ -1,7 +1,7 @@
 Instructions for making GEN-only ntuples
 ----------------------------------------
 
-o Make the input filelists from ntuples in Andreas' EOS area.  Filelists can be made for 2 MC samples:  pythia8 and herwig. The sample type can be changed by updating the MCSAMPLE variable in makeFilelists.py.  Both MC samples have the same mass binning. MCSAMPLE should be the only variable that needs changing. Filelists will go in filelists directory.
+o Make the input filelists from ntuples in Andreas' EOS area.  Filelists can be made for 2 MC samples:  pythia8 and herwig. The sample type can be changed by updating the MCSAMPLE variable in makeFilelists.py.  Both MC samples have the same mass binning. MCSAMPLE should be the only variable that needs changing. Filelists will go in filelists directory will be created automatically when running the script.
 
 > python makeFilelists.py
 

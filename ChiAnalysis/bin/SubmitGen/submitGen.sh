@@ -45,10 +45,9 @@ do
     for TRUNC in 0
     do
 	if [ ${TRUNC} == 0 ]; then
-	    ## CFGDIR=genCFGS/${GENR}Gaussian
-	    CFGDIR=genCFGS/${GENR}GaussianSysMinus
+	    CFGDIR=genCFGS/${GENR}Gaussian
+	    ## CFGDIR=genCFGS/${GENR}GaussianSysMinus
         else
-	    ## CFGDIR=genCFGS/${GENR}CrystalBallT${TRUNC}
 	    CFGDIR=genCFGS/${GENR}CrystalBall
 	fi
 	

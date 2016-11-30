@@ -1,14 +1,20 @@
 #!/bin/bash
 
+########################################################################
+
 AK4sf=1       # set to 1 to turn on AK4 scale factor, 0=off
 DataToMCsf=1  # set to 1 to turn on DataToMC scale factor, 0=off
-SysErr=-1      # +-1 to smear by additional +-10%,  anything else no addtional smearing   only for Gaussian smearing
+SysErr=0      # +-1 to smear by additional +-10%,  anything else no addtional smearing   only for Gaussian smearing
 
-# Generator="Herwig"
-Generator="Pythia8"
+Generator="Herwig"
+# Generator="Pythia8"
 
 # SMEARING=CrystalBall
 SMEARING=Gaussian
+
+########################################################################
+
+NCFGs=10  ## this should correspond to the number of filelists in each filelist directory
 
 cfgDir=genCFGS/${Generator}${SMEARING}
 if [[ "$SysErr" -eq 1 ]]; then
@@ -17,7 +23,6 @@ elif [[ "$SysErr" -eq -1 ]]; then
     cfgDir=genCFGS/${Generator}${SMEARING}SysMinus
 fi
 
-NCFGs=10  ## this should correspond to the number of filelists in each filelist directory
 
 if [[ "$Generator" == "Herwig" ]]
 then
@@ -30,7 +35,7 @@ else
     filelistbase=${generator}_50000__Nov14
 fi
 
-OutDir=root://eoscms//eos/cms/store/caf/user/apana/Chi_13TeV/GenOutput/76x/${generator}_${SMEARING}
+OutDir=root://eoscms//eos/cms/store/caf/user/apana/Chi_13TeV/GenOutput/80x/${generator}_${SMEARING}
 CFG=GenChiNtuple_cfg
 
 

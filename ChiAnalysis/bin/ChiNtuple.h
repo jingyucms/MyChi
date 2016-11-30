@@ -193,7 +193,8 @@ private :
 
   double SmearFactor(double,double, double);
   double SmearFunc(double, double, double, double, double, double);
-  double TriggerEff(double, double);
+  double TriggerEff2015(double, double);
+  double TriggerEff2016(double, double);  
   TRandom rnd;  
 };
 
@@ -609,7 +610,7 @@ TH3F* ChiNtuple::Book3dHist(const char* name, const char* title, Int_t nbinsx, D
   return h;
 }
 
-double ChiNtuple::TriggerEff(double mass, double chi){
+double ChiNtuple::TriggerEff2015(double mass, double chi){
   double eff=1.; 
   if (!IsData) return eff;
   if (mass<1000.) return eff;
@@ -676,6 +677,36 @@ if ( chi <= 9){
     par[0] = 1.0;
     par[1] = 1582.37906391;
     par[2] = 246.476359;
+  }else{
+    return eff;
+  }  
+    
+
+  double xx=mass;
+  if (xx<1500.) xx=1500.;
+  
+  eff=par[0]/2.+par[0]/2.*TMath::Erf((xx-par[1])/par[2]);
+  return eff;
+  
+}
+
+double ChiNtuple::TriggerEff2016(double mass, double chi){
+  double eff=1.; 
+  if (!IsData) return eff;
+  if (mass<1000.) return eff;
+  
+  double par[] { 0, 0., 0. }; 
+
+  if ( chi <= 14){
+    return eff;
+  }else if ( chi <= 15){
+    par[0] = 1.0;
+    par[1] = 1707.08830701; 
+    par[2] = 157.415787067;
+  }else if ( chi <= 16){
+    par[0] = 1.0;
+    par[1] = 1738.6849109;
+    par[2] = 174.329521835;
   }else{
     return eff;
   }  

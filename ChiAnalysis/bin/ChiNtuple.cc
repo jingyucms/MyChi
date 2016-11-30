@@ -773,9 +773,9 @@ void ChiNtuple::Loop(){
 
 	  double teff(1.);
 	  if (WhichTrigger == "PFHT800"){
-	    teff=TriggerEff(recoDijets.mass,recoDijets.chi);
+	    teff=TriggerEff2015(recoDijets.mass,recoDijets.chi);
 	  }else if (WhichTrigger == "PFHT900"){
-	    teff=1.;
+	    teff=TriggerEff2016(recoDijets.mass,recoDijets.chi);
 	  }
 	  //if (recoDijets.mass>1500)
 	  //  std::cout << "%mass/chi/teff: " << recoDijets.mass << "\t" << recoDijets.chi << "\t" << teff << std::endl;

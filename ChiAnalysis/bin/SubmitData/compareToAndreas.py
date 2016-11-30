@@ -6,7 +6,7 @@ from myPyRootMacros import SetStyle, prepPlot, RebinHist, Get1DHist
 
 ## chiBin=["1900_2400"]
 ## chiBins=["4200_4800"]
-chiBins=["1900_2400", "2400_3000", "3000_3600", "3600_4200", "4200_4800", "4800_13000"]
+chiBins=["1900_2400", "2400_3000", "3000_3600", "3600_4200", "4200_4800", "4800_5400", "5400_6000", "6000_13000"]
 
 ## --------------------------------------------------------------------------- ##
 
@@ -28,13 +28,13 @@ if __name__ == '__main__':
 
     SetStyle()
 
-    HistFile1="root://eoscms//eos/cms/store/caf/user/apana/Chi_13TeV/ChiNtuples/Data/chiNtuple_data_25nsData5.root"
-    HistFile2="../Data/datacard_shapelimit13TeV_25nsData5_chi.root"
+    HistFile1="./chiNtuple_PFHT900.root"
+    HistFile2="./datacard_shapelimit13TeV_JetHT_25ns_data_2016AllPromptReco_v1.root"
 
     for chiBin in chiBins:
 
         hname1="dijet_"+chiBin+"_chi"
-        hname2="data_obs#chi"+chiBin+"_rebin1"
+        hname2="datacard_shapelimit13TeV_#chi"+chiBin+"_rebin1"
 
         htmp=Get1DHist(HistFile1,hname1)
         hDen=Get1DHist(HistFile2,hname2)
@@ -65,6 +65,7 @@ if __name__ == '__main__':
         hNum.Draw()
         hDen.Draw("same")
 
+        c1.Update()
         cname="Ratio"
         c2 = prepPlot("c2",cname,750,120,500,500)
         c2.SetLogy(0);    
@@ -74,7 +75,7 @@ if __name__ == '__main__':
         hRat.SetMaximum(1.24)
         hRat.SetMinimum(0.0)
         hRat.Draw()
-
+        c2.Update()
 
         # f2=TFile(OutFile,"RECREATE")
         # f2.cd()

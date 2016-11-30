@@ -523,20 +523,51 @@ void ChiNtuple::Loop(){
       }
 
       bool yesTrigger(true);
-      bool hltPFHT800(true);
-      bool hltPFHT650(true);      
+      bool hltPFHT900(true);
+      bool hltPFHT800(true);      
+      bool hltPFHT650(true);
+
+      bool hltPFJet450(true);
+      bool hltPFJet320(true);
+      
       if (IsData){
 	yesTrigger=false;
+	hltPFHT900=false;	
 	hltPFHT800=false;
 	hltPFHT650=false;	
 
+	hltPFJet450=false;
+	hltPFJet320=false;
+	
 	bool hltPFHT650_v1(false);
 	bool hltPFHT650_v2(false);
 	bool hltPFHT650_v3(false);
+	bool hltPFHT650_v4(false);
+	bool hltPFHT650_v5(false);
+	bool hltPFHT650_v6(false);
+	bool hltPFHT650_v7(false);
+	bool hltPFHT650_v8(false);
 
 	bool hltPFHT800_v1(false);
 	bool hltPFHT800_v2(false);
 	bool hltPFHT800_v3(false);
+
+	bool hltPFHT900_v1(false);
+	bool hltPFHT900_v2(false);
+	bool hltPFHT900_v3(false);
+	bool hltPFHT900_v4(false);
+	bool hltPFHT900_v5(false);
+	bool hltPFHT900_v6(false);
+
+	bool hltPFJet450_v4(false);
+	bool hltPFJet450_v5(false);
+	bool hltPFJet450_v7(false);
+	bool hltPFJet450_v9(false);
+	
+	bool hltPFJet320_v4(false);
+	bool hltPFJet320_v5(false);
+	bool hltPFJet320_v7(false);
+	bool hltPFJet320_v9(false);
 	
 	std::map<std::string,bool>::iterator trig_iter;		
 	trig_iter=HLT_isFired->find("HLT_PFHT650_v1");
@@ -545,6 +576,16 @@ void ChiNtuple::Loop(){
 	if (trig_iter!=HLT_isFired->end())hltPFHT650_v2=trig_iter->second;
 	trig_iter=HLT_isFired->find("HLT_PFHT650_v3");
 	if (trig_iter!=HLT_isFired->end())hltPFHT650_v3=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT650_v4");
+	if (trig_iter!=HLT_isFired->end())hltPFHT650_v4=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT650_v5");
+	if (trig_iter!=HLT_isFired->end())hltPFHT650_v5=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT650_v6");
+	if (trig_iter!=HLT_isFired->end())hltPFHT650_v6=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT650_v7");
+	if (trig_iter!=HLT_isFired->end())hltPFHT650_v7=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT650_v8");
+	if (trig_iter!=HLT_isFired->end())hltPFHT650_v8=trig_iter->second;
 
 	trig_iter=HLT_isFired->find("HLT_PFHT800_v1");
 	if (trig_iter!=HLT_isFired->end())hltPFHT800_v1=trig_iter->second;
@@ -552,12 +593,53 @@ void ChiNtuple::Loop(){
 	if (trig_iter!=HLT_isFired->end())hltPFHT800_v2=trig_iter->second;
 	trig_iter=HLT_isFired->find("HLT_PFHT800_v3");
 	if (trig_iter!=HLT_isFired->end())hltPFHT800_v3=trig_iter->second;
+
+	trig_iter=HLT_isFired->find("HLT_PFHT900_v1");
+	if (trig_iter!=HLT_isFired->end())hltPFHT900_v1=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT900_v2");
+	if (trig_iter!=HLT_isFired->end())hltPFHT900_v2=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT900_v3");
+	if (trig_iter!=HLT_isFired->end())hltPFHT900_v3=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT900_v4");
+	if (trig_iter!=HLT_isFired->end())hltPFHT900_v4=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT900_v5");
+	if (trig_iter!=HLT_isFired->end())hltPFHT900_v5=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFHT900_v6");
+	if (trig_iter!=HLT_isFired->end())hltPFHT900_v6=trig_iter->second;
+
+
+	trig_iter=HLT_isFired->find("HLT_PFJet450_v4");
+	if (trig_iter!=HLT_isFired->end())hltPFJet450_v4=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFJet450_v5");
+	if (trig_iter!=HLT_isFired->end())hltPFJet450_v5=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFJet450_v7");
+	if (trig_iter!=HLT_isFired->end())hltPFJet450_v7=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFJet450_v9");
+	if (trig_iter!=HLT_isFired->end())hltPFJet450_v9=trig_iter->second;
+
+	trig_iter=HLT_isFired->find("HLT_PFJet320_v4");
+	if (trig_iter!=HLT_isFired->end())hltPFJet320_v4=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFJet320_v5");
+	if (trig_iter!=HLT_isFired->end())hltPFJet320_v5=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFJet320_v7");
+	if (trig_iter!=HLT_isFired->end())hltPFJet320_v7=trig_iter->second;
+	trig_iter=HLT_isFired->find("HLT_PFJet320_v9");
+	if (trig_iter!=HLT_isFired->end())hltPFJet320_v9=trig_iter->second;	
 	
-	hltPFHT650=hltPFHT650_v1 || hltPFHT650_v2 || hltPFHT650_v3;
+	hltPFHT650=hltPFHT650_v1 || hltPFHT650_v2 || hltPFHT650_v3 ||
+	  hltPFHT650_v4 || hltPFHT650_v5 || hltPFHT650_v6 || hltPFHT650_v7 || hltPFHT650_v8;
+	
 	hltPFHT800=hltPFHT800_v1 || hltPFHT800_v2 || hltPFHT800_v3;
 
-	if (WhichTrigger == "PFHT650") yesTrigger=hltPFHT650;
-	if (WhichTrigger == "PFHT800") yesTrigger=hltPFHT800;
+	hltPFHT900=hltPFHT900_v1 || hltPFHT900_v2 || hltPFHT900_v3 || hltPFHT900_v4 ||
+	  hltPFHT900_v5 || hltPFHT900_v6;
+
+	hltPFJet450=hltPFJet450_v4 || hltPFJet450_v5 || hltPFJet450_v7 || hltPFJet450_v9;
+	hltPFJet320=hltPFJet320_v4 || hltPFJet320_v5 || hltPFJet320_v7 || hltPFJet320_v9;
+	
+	if (WhichTrigger == "PFHT650") yesTrigger=hltPFHT650 || hltPFJet320;
+	if (WhichTrigger == "PFHT800") yesTrigger=hltPFHT800 ; // early 13 TeV no OR with jet
+	if (WhichTrigger == "PFHT900") yesTrigger=hltPFHT900 || hltPFJet450;
       }
       
       int ngenJets=0;
@@ -690,16 +772,18 @@ void ChiNtuple::Loop(){
 	  recoDijets.e2=  Jet2.Energy();
 
 	  double teff(1.);
-	  if (WhichTrigger == "PFHT800")
+	  if (WhichTrigger == "PFHT800"){
 	    teff=TriggerEff(recoDijets.mass,recoDijets.chi);
-			     
+	  }else if (WhichTrigger == "PFHT900"){
+	    teff=1.;
+	  }
 	  //if (recoDijets.mass>1500)
 	  //  std::cout << "%mass/chi/teff: " << recoDijets.mass << "\t" << recoDijets.chi << "\t" << teff << std::endl;
 	  double wt=weight/teff;
 	  if (!yesTrigger) wt=0.;
 
 	  fillHist("dijet_mass",DijetMass,weight);
-	  if (hltPFHT800) fillHist("dijet_mass_trg",DijetMass,weight);
+	  if (yesTrigger) fillHist("dijet_mass_trg",DijetMass,weight);
 	  fillHist("dijet_mass_trgcorr",DijetMass,wt);
 	  
 	  if (DijetMass>=massBins1[0] && DijetMass<massBins1[massBins1.size()-1]){

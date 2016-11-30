@@ -1,15 +1,15 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-# nevents=1000
+# nevents=50000
 nevents=0
 
-## myTrigger="PFHT800";
-myTrigger="PFHT650";
+myTrigger="PFHT900";
+## myTrigger="PFHT650";
 
 jobIndex=os.environ['JOBNUM']
 
-ntuples="filelists/2pt4invfb/fileList_"+jobIndex+".txt"
+ntuples="filelists/PromptData2016/ntuples_"+jobIndex+".list"
 output="hsts/chiNtuple_"+myTrigger+"_"+jobIndex+".root"
 
 process = cms.PSet()

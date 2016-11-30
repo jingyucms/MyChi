@@ -281,7 +281,7 @@ void ChiNtuple::SetXSWeight(const double & wt){
 }
 
 void ChiNtuple::SetTrigger(const string & x){
-  if (x != "PFHT650" && x != "PFHT800"){
+  if (x != "PFHT650" && x != "PFHT800" && x != "PFHT900"){
     std::cout << "Invalid Trigger Path..." << std::endl;
     WhichTrigger="None";
   }else{

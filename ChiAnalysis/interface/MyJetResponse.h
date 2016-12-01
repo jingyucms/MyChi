@@ -51,19 +51,20 @@ class MyJetResponse {
     std::vector<float> thePars= parameters_Sigmas[ibin];
   
     double x=pt;
+    double e=eta;
     Double_t p0=thePars[0];
     double mean = 1.;
     double sigma = sqrt(((TMath::Sign(1.,p0)*pow(thePars[0]/x,2))+(pow(thePars[1],2)*pow(x,(thePars[3]-1))))+pow(thePars[2],2));
 
     //std::cout << "Sigma: "<< sigma << std::endl;
 
-    if (ak4_sf) sigma=sigma*ak4_scalefact(x);
-    if (datamc_sf) sigma=sigma*DataToMC_scalefact(eta);
+    if (ak4_sf) sigma=sigma*ak4_scalefact(x,e);
+    if (datamc_sf) sigma=sigma*DataToMC_scalefact(e);
 
     // if (sysunc == 1) sigma  = sigma*(1 + 0.1);
     // if (sysunc == -1) sigma = sigma*(1 - 0.1);
-    if (sysunc == 1) sigma  = sigma*(1 + DataToMC_scalefactorUncert(eta));
-    if (sysunc == -1) sigma = sigma*(1 - DataToMC_scalefactorUncert(eta));
+    if (sysunc == 1) sigma  = sigma*(1 + DataToMC_scalefactorUncert(e));
+    if (sysunc == -1) sigma = sigma*(1 - DataToMC_scalefactorUncert(e));
     
     double r = rnd.Gaus(mean,sigma);
   
@@ -89,6 +90,7 @@ class MyJetResponse {
     std::vector<float> sigmas= parameters_Sigmas[ibin];
 
     double x=pt;
+    double e=eta;
     Double_t p0=sigmas[0];
     double mean = 1.;
     double sigma = sqrt(((TMath::Sign(1.,p0)*pow(sigmas[0]/x,2))+(pow(sigmas[1],2)*pow(x,(sigmas[3]-1))))+pow(sigmas[2],2));
@@ -111,13 +113,13 @@ class MyJetResponse {
 
     // std::cout << sigma << "\t" << sf << "\t" << sf << "\t" << sf << "\t" << sf << "\t" << sf << std::cout;
     
-    if (ak4_sf) sigma=sigma*ak4_scalefact(x);    
-    if (datamc_sf) sigma=sigma*DataToMC_scalefact(eta);
+    if (ak4_sf) sigma=sigma*ak4_scalefact(x,e);    
+    if (datamc_sf) sigma=sigma*DataToMC_scalefact(e);
 
     // if (sysunc == 1) sigma  = sigma*(1 + 0.1);
     // if (sysunc == -1) sigma = sigma*(1 - 0.1);
-    if (sysunc == 1) sigma  = sigma*(1 + DataToMC_scalefactorUncert(eta));
-    if (sysunc == -1) sigma = sigma*(1 - DataToMC_scalefactorUncert(eta));
+    if (sysunc == 1) sigma  = sigma*(1 + DataToMC_scalefactorUncert(e));
+    if (sysunc == -1) sigma = sigma*(1 - DataToMC_scalefactorUncert(e));
     
     TF1 *f1 = new TF1("f1",fnc_dscb,0.,5.,7);
     f1->SetParameter(0,1.);
@@ -284,9 +286,10 @@ class MyJetResponse {
   std::vector<std::vector<float>> parameters_Sigmas, parameters_Aones, parameters_Pones,parameters_Atwos, parameters_Ptwos;
 
 
-  double ak4_scalefact(double x){
+  double ak4_scalefact(double x, double e){
     double fact(1.);
     double xx=x;
+    double ee=fabs(e);
     // 74x smearing    
     // if (xx<300) xx=300;
     // if (xx>900.)xx=900;
@@ -298,9 +301,23 @@ class MyJetResponse {
     // fact=1.38043e+00*TMath::TanH(3.45865e-04*(xx-(-2.06310e+03)));
 
     // 80x smearing
-    if (xx<500) xx=500;
-    if (xx>1000.)xx=900;
-    fact=1.38043e+00*TMath::TanH(3.45865e-04*(xx-(-2.06310e+03)));
+
+    if (ee>1.7 && ee<=1.9) {
+      if (xx<300) xx=300;
+      if (xx>2400) xx=2400;
+      fact=1.1+0.00035*xx;
+    }
+
+    if (ee>1.9) {
+      //fact=1.3;
+      if (xx<500) xx=500;
+      if (xx>2400) xx=2400;
+      fact=1.3*(0.8+0.0004*xx);
+    }
+    
+    // if (xx<500) xx=500;
+    // if (xx>1000.)xx=900;
+    // fact=1.38043e+00*TMath::TanH(3.45865e-04*(xx-(-2.06310e+03)));
     
     // std::cout << "AK4_Scalefact: " << "pt: " << x << "\t" << fact << std::endl;
     return fact;

@@ -302,13 +302,13 @@ class MyJetResponse {
 
     // 80x smearing
 
-    if (ee>1.7 && ee<=1.9) {
+    if (ee>1.7 && ee<=2.1) {
       if (xx<300) xx=300;
       if (xx>2400) xx=2400;
       fact=1.1+0.00035*xx;
     }
 
-    if (ee>1.9) {
+    if (ee>2.1) {
       //fact=1.3;
       if (xx<500) xx=500;
       if (xx>2400) xx=2400;

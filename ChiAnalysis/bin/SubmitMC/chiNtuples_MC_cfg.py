@@ -15,13 +15,20 @@ PtBins={"Pt_170to300":117276.0,
         "Pt_1800to2400":0.114943,
         "Pt_2400to3200":0.006830,
         "Pt_3200toInf":0.000165,
-        "HT300to500":347700.0,
-        "HT500to700":32100.0,
-        "HT700to1000":6831.0,
-        "HT1000to1500":1207.0,
-        "HT1500to2000":119.9,
-        "HT2000toInf":25.24,
-        "flatPythia8":-1.0
+        #"HT300to500":347700.0,
+        #"HT500to700":32100.0,
+        #"HT700to1000":6831.0,
+        #"HT1000to1500":1207.0,
+        #"HT1500to2000":119.9,
+        #"HT2000toInf":25.24,
+        "HT300to500":0.006467159312146088,
+        "HT500to700":0.0005102028471673902,
+        "HT700to1000":0.00015479235727186593,
+        "HT1000to1500":7.981053006633407e-05,
+        "HT1500to2000":1.0345466400090463e-05,
+        "HT2000toInf":4.27956236940979e-06,
+        "flatPythia8":-1.0,
+        "flatHerwigpp":-1.0
 }
 theBins=PtBins.keys()
 ## print len(theBins),theBins
@@ -80,15 +87,19 @@ elif GENERATOR=="25nsMC10":
     ntuples="filelists/25nsMC10/ntuples_"+jobNum+".list"
 elif GENERATOR=="flatPythia8":
     ntuples="filelists/flatPythia8/ntuples_"+jobNum+".list"
+elif GENERATOR=="flatHerwigpp":
+    ntuples="filelists/flatHerwigpp/ntuples_"+jobNum+".list"
 else:
-    ntuples="filelists/madgraphMLM_newJES/ntuples_"+ thePTBin +"_"+jobNum+".list"
+    ntuples="filelists/madgraphMLM/ntuples_"+ thePTBin +"_"+jobNum+".list"
 
 if doGaussian:
-    ## output="root://eoscms//eos/cms/store/caf/user/apana/Chi_13TeV/ChiNtuples/MC/76x/hsts/chiNtuple_" + GENERATOR + "_" + thePTBin + "_GS"
-    output="hsts/chiNtuple_" + GENERATOR + "_" + thePTBin + "_GS"
+    #output="root://eoscms//eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/Jingyu/samples/DiJet/SMEAR/MCOutput/hstsMCmadgraphMLM_v5/chiNtuple_" + GENERATOR + "_" + thePTBin + "_GS"
+    #output="/afs/cern.ch/work/z/zhangj/private/jetUnfold/data/hstsMCPythia8/chiNtuple_" + GENERATOR + "_" + thePTBin + "_GS"
+    output="/afs/cern.ch/work/z/zhangj/private/jetUnfold/data/hstsMCHerwigpp/chiNtuple_" + GENERATOR + "_" + thePTBin + "_GS"
 else:
-    # output="root://eoscms//eos/cms/store/caf/user/apana/Chi_13TeV/ChiNtuples/MC/76x/hsts/chiNtuple_" + GENERATOR + "_" + thePTBin + "_CB" + str(SMRMAX)
-    output="hsts/chiNtuple_" + GENERATOR + "_" + thePTBin + "_CB" + str(SMRMAX)
+    #output="root://eoscms//eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/Jingyu/samples/DiJet/SMEAR/MCOutput/hstsMCmadgraphMLM_v5/chiNtuple_" + GENERATOR + "_" + thePTBin + "_CB" + str(SMRMAX)
+    #output="/afs/cern.ch/work/z/zhangj/private/jetUnfold/data/hstsMCPythia8/chiNtuple_" + GENERATOR + "_" + thePTBin + "_CB" + str(SMRMAX)
+    output="/afs/cern.ch/work/z/zhangj/private/jetUnfold/data/hstsMCHerwigpp/chiNtuple_" + GENERATOR + "_" + thePTBin + "_CB" + str(SMRMAX)
 
 if doAK4_sf:
     output=output + "_AK4SF"

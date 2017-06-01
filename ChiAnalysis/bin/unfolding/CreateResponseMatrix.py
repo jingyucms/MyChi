@@ -47,7 +47,6 @@ chiBins2=[1,2,3,4,5,6,7,8,9,10,12,14,16]
 chiBins3=[1,3,6,9,12,16]
 chiBins4=[1,3,5,7,10,12,14,16]
 
-
 def BookHistograms():
 
     ### Book the histograms
@@ -944,7 +943,7 @@ if __name__ == "__main__":
                 if jentry % 2 != 0:
                     continue
 
-
+        #print jentry
         tree.GetEntry(jentry)
 
         progress = 10.0*jentry/(1.0*nevt);

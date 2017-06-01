@@ -10,8 +10,10 @@ import glob
 
 FilesPerCfg=100  ##  number of files per fileslist
 
-INDIR="/eos/cms/store/cmst3/user/hinzmann/dijet_angular/PromptData2016/"
-OUTDIR="filelists/PromptData2016"
+#INDIR="/eos/cms/store/cmst3/user/hinzmann/dijet_angular/PromptData2016/"
+INDIR="/eos/cms/store/cmst3/user/hinzmann/dijet_angular/ReRecoData2016v3/"
+#OUTDIR="filelists/PromptData2016"
+OUTDIR="filelists/ReRecoData2016v3"
 ptBins=["data"]
 searchstring="datacard_shapelimit13TeV_"
 

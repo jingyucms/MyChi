@@ -127,6 +127,8 @@ int main(int argc, char* argv[])
   cout << "Output written to: " << outFile << endl;
   fwlite::TFileService fs = fwlite::TFileService(outFile);
   TFileDirectory dir = fs.mkdir("chiAnalysis");
+  TFile* OutFile = TFile::Open(outputHandler_.file().c_str(),"RECREATE");
+  OutFile->cd();
 
   if (SMEARING_ == "Gaussian") smearMax_=100.;
 
@@ -167,7 +169,7 @@ int main(int argc, char* argv[])
   m_HistNames[hname] =  Book1dHist(hname, htitle, 1, -0.5, 0.5, false );
 
   hname="evtsHT"; htitle="Number of Events per HT Bin";
-  m_HistNames[hname] =  Book1dHist(hname, htitle, 5, -1.5, 3.5, false );
+  m_HistNames[hname] =  Book1dHist(hname, htitle, 11, -1.5, 9.5, false );
 
   hname="evtsPT"; htitle="Number of Events per PT Bin";
   m_HistNames[hname] =  Book1dHist(hname, htitle, 11, -1.5, 9.5, false );
@@ -194,7 +196,8 @@ int main(int argc, char* argv[])
   Int_t PTBin(-1);
   Int_t MBin(-1);  
 
-  _outTree = new TTree("DijetTree", "");
+  OutFile->cd();
+  _outTree = new TTree("DijetTree", "DijetTree");
   
   _outTree->Branch("XSweight",   &XSweight  ,  "XSweight/F");
   _outTree->Branch("EVTweight",   &EVTweight  ,  "EVTweight/F");
@@ -356,8 +359,8 @@ int main(int argc, char* argv[])
 	std::cout << "Mass Bin not found in input file name"  << std::endl;
       }
       MBin=mBin;
-  
 
+      
       fwlite::Event ev(inFile);
 
       std::cout<< "Number of events in sample: " << ev.size() << std::endl;
@@ -373,8 +376,6 @@ int main(int argc, char* argv[])
 	// Handle to the genjet collection
 	edm::Handle<reco::GenJetCollection>  genJets;
 	event.getByLabel( GenJetCollection_, genJets );
-	
-
 
 	if (genJets.isValid()){
 	  if (Debug_)std::cout << "genJets size: " << genJets->size() << std::endl;
@@ -694,7 +695,7 @@ int main(int argc, char* argv[])
 
 	}// end of genJets->size()>1 if block
 	_outTree->Fill();
-      } // end of event loop 
+      } // end of event loop
       // close input file
       inFile->Close();
     }
@@ -702,7 +703,11 @@ int main(int argc, char* argv[])
     // this has to be done twice to stop the file loop as well
     if(maxEvents_>0 ? ievt+1>maxEvents_ : false) break;
   }
+  OutFile->Write();
+  OutFile->Close();
   std::cout << "GenChiAnalysis finished normally" << std::endl;
+  //_outTree->Print();
+  // gDebug=7;
   return 0;
 }
 

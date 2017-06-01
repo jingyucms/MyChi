@@ -42,7 +42,7 @@ fi
 
 cp ../ChiNtuple.cc ../ChiNtuple.h $logDir
 
-for a in {0..17}
+for a in {0..116}
 ## for a in 0
 do
     config=chiNtuple_cfg.py

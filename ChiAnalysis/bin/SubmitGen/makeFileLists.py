@@ -10,11 +10,17 @@ import glob
 
 FilesPerCfg=10  ##  number of files per fileslist
 
-INDIR="/eos/cms/store/cmst3/user/hinzmann/dijet_angular"
 ## MCSAMPLE="pythia8_ci"
 MCSAMPLE="herwigpp"
-mBins=["1000_1500", "1500_1900", "1900_2400", "2400_2800", "2800_3300", "3300_3800", "3800_4300", "4300_13000"]
-
+## MCSAMPLE="madgraphMLM"
+if MCSAMPLE=="pythia8_ci" or MCSAMPLE=="herwigpp":
+    mBins=["1000_1500", "1500_1900", "1900_2400", "2400_2800", "2800_3300", "3300_3800", "3800_4300", "4300_13000"]
+    INDIR="/eos/cms/store/cmst3/user/hinzmann/dijet_angular"
+elif MCSAMPLE=="madgraphMLM":
+    mBins=["300to500", "500to700", "700to1000","1000to1500","1500to2000","2000toInf"]
+    INDIR="/eos/cms/store/cmst3/user/hinzmann/dijet_angular/QCDv7"
+else:
+    print "Please specify a MCSAMPLE. --existing"
 
 eosCommand="/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select" ## if this doesn't work check name using ouput from "which eos"
 
@@ -109,6 +115,9 @@ if __name__ == "__main__":
         elif MCSAMPLE=="herwigpp":
             searchstring="jobtmp_herwigpp_qcd_m" + mBin + "___Nov28"
             OUTDIR="filelists/herwigpp_Nov28/m" + mBin
+        elif MCSAMPLE=="madgraphMLM":
+            searchstring="EXOVVTree_QCD_HT"+mBin+"_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIIFall15MiniAODv2_PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1"
+            OUTDIR="filelists/madgraphMLM_2016/ht" + mBin
         else:
             print "\t Not yet setup for MCSAMPLE: ",MCSAMPLE,"  -- exiting"
             sys.exit(1)

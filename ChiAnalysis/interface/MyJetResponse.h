@@ -195,7 +195,6 @@ class MyJetResponse {
 	      thePars.push_back(pars[i]);
 	    }
 	    parameters_Aones.push_back(thePars);
-	  
 	  }
 	
 	}else if (paramAsStr=="pone"){
@@ -217,10 +216,8 @@ class MyJetResponse {
 	      thePars.push_back(pars[i]);
 	    }
 	    parameters_Pones.push_back(thePars);
-	  
 	  }
-
-	
+	  
 	}else if (paramAsStr=="atwo"){
 
 	  const unsigned npar(4);
@@ -262,16 +259,13 @@ class MyJetResponse {
 	      thePars.push_back(pars[i]);
 	    }
 	    parameters_Ptwos.push_back(thePars);
-	  
 	  }
-
 	}
       }
     
       tmp = (pos==string::npos) ? "" : tmp.substr(pos+1);
       pos = tmp.find(':');
-    }
-    
+    }  
   }
   
  private:
@@ -302,17 +296,25 @@ class MyJetResponse {
 
     // 80x smearing
 
-    if (ee>1.7 && ee<=1.9) {
-      if (xx<300) xx=300;
-      if (xx>2400) xx=2400;
-      fact=1.1+0.00035*xx;
+    if (ee<=0.5) {
+      if (xx<=2500) fact=0.95;
+      if (xx>2500) fact=1.0;
     }
 
-    if (ee>1.9) {
-      //fact=1.3;
-      if (xx<500) xx=500;
-      if (xx>2400) xx=2400;
-      fact=1.3*(0.8+0.0004*xx);
+    if (ee>1.0 && ee<=1.5) {
+      if (xx<=600) fact=1.0;
+      if (xx>600) fact=1.1;
+    }
+    
+    if (ee>1.5 && ee<=2.1) {
+      if (xx<=600) fact=1.2;
+      if (xx>600 && xx<=1400) fact=1.3;
+      if (xx>=1400) fact=1.4;
+    }
+
+    if (ee>2.1) {
+      if (xx<=1000) fact=1.3;
+      if (xx>1000) fact=1.5;
     }
     
     // if (xx<500) xx=500;
@@ -390,33 +392,32 @@ class MyJetResponse {
     double eta=fabs(xx);
 
     if (eta < 0.5) {
-      fact=1.122;
+      fact=1.109;
     }
     else if (eta < 0.8) {
-      fact=1.167;
+      fact=1.138;
     }
     else if (eta < 1.1) {
-      fact=1.168;
+      fact=1.114;
     }
     else if (eta < 1.3) {
-      fact=1.029;
+      fact=1.123;
     }
     else if (eta < 1.7) {
-      fact=1.115;
+      fact=1.084;
     }
     else if (eta < 1.9) {
-      fact=1.041;
+      fact=1.082;
     }
     else if (eta < 2.1) {
-      fact=1.167;
+      fact=1.140;
     }
     else if (eta < 2.3) {
-      fact=1.094;
+      fact=1.067;
     }
     else if (eta < 2.5) {
-      fact=1.168;
+      fact=1.177;
     }
-    
     // std::cout << "DataToMC_Scalefact: " << fact << std::endl;
     return fact;
   }
@@ -427,31 +428,31 @@ class MyJetResponse {
     double eta=fabs(xx);
 
     if (eta < 0.5) {
-      fact=0.026;
+      fact=0.008;
     }
     else if (eta < 0.8) {
-      fact=0.048;
+      fact=0.013;
     }
     else if (eta < 1.1) {
-      fact=0.046;
+      fact=0.013;
     }
     else if (eta < 1.3) {
-      fact=0.066;
+      fact=0.024;
     }
     else if (eta < 1.7) {
-      fact=0.03;
+      fact=0.011;
     }
     else if (eta < 1.9) {
-      fact=0.062;
+      fact=0.035;
     }
     else if (eta < 2.1) {
-      fact=0.086;
+      fact=0.047;
     }
     else if (eta < 2.3) {
-      fact=0.093;
+      fact=0.053;
     }
     else if (eta < 2.5) {
-      fact=0.120;
+      fact=0.041;
     }
     
     // std::cout << "DataToMC_Scalefact: " << fact << std::endl;

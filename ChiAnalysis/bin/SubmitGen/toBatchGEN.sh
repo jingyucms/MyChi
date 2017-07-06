@@ -1,6 +1,8 @@
 #!/bin/sh
 #
 
+export X509_USER_PROXY=/afs/cern.ch/user/z/zhangj/x509up_u69244
+
 echo "Number of arguments: " $#
 if [ $# -lt 1 ]
 then

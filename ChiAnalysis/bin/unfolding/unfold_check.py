@@ -1,4 +1,4 @@
-from ROOT import gROOT, gStyle, gSystem, TCanvas, TF1, TFile, TH1F, TColor, TLine, TLegend, TLatex, SetOwnership, gDirectory, TH1
+from ROOT import gROOT, gStyle, gSystem, TCanvas, TF1, TFile, TH1F, TColor, TLine, TLegend, TLatex, SetOwnership, gDirectory, TH1, TDecompSVD
 import sys,string,math,os,ROOT
 
 # ROOT.gSystem.Load(os.path.join(os.environ.get("HOME"),'Chi/RooUnfold-1.1.1/libRooUnfold.so'))
@@ -15,6 +15,7 @@ from ROOT import RooUnfoldInvert
 sys.path.append(os.path.join(os.getcwd(),'rootmacros'))
 from myPyRootMacros import *
 from scripts import plotComparison, doPoisson, getMassBins, compAndDrawIt,reBin
+
 #===============================================================
 
 #doMC=True
@@ -35,13 +36,8 @@ saveSMR=False  # use when you want to save smr mc distribution in output foot fi
 
 suffix=".gif"
 
-DAgostini=True
+outDir="results_MatrixInvert"
 
-if DAgostini==False:
-    outDir="results_MatrixInvert"
-else:
-    NITER=4
-    outDir="results_Iter"+str(int(NITER))
 
 #===============================================================
 
@@ -73,42 +69,21 @@ if __name__ == '__main__':
 
     #dataFile="/uscms_data/d3/jingyu/ChiAnalysis/jetUnfold/CMSSW_8_0_23/src/MyChi/ChiAnalysis/bin/unfolding/ResponseMatrices/chiNtuple_dataReReco_prelimJEC_PFHT900.root"
     #dataFile="/uscms_data/d3/jingyu/ChiAnalysis/jetUnfold/CMSSW_8_0_23/src/MyChi/ChiAnalysis/bin/unfolding/ResponseMatrices/chiNtuple_data_PFHT900_v2.root"
-    dataFile="root://cmseos.fnal.gov//store/user/jingyu/jetUnfold/DataNtuple/chiNtuple_dataReReco_v3_PFHT900.root"
+    dataFile="/uscms_data/d3/jingyu/ChiAnalysis/jetUnfold/CMSSW_8_0_23/src/MyChi/ChiAnalysis/bin/unfolding/chiNtuple_dataReReco_v3_PFHT900.root"
 
     responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
     #responseFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20161214.root"
     #responseFile="../ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +"_Train.root"
     #responseFile="ResponseMatrices/Response_pythia8_Pt_170toInf_CB_AK4SF_Test_20161214_Test.root"
     
-    if doMC:
-        #dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20161214.root"
-        #dataFile="ResponseMatrices/Response_pythia8_Pt_170toInf_CB_AK4SF_20161202.root"
-        dataFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
-        #dataFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_Test_" +date +"_Test.root"
-        #responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_Train_" +date +"_Train.root"
-        #dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20170206.root"
-        #dataFile="ResponseMatrices/Response_herwigpp_Pt_170toInf_CB_AK4SF_20170201.root"
-    ## get 2D reco hist to be Unfolded
-    if doMC:
-        
-        Reco2d_Chi1=Get2DHist(dataFile,"dijet_mass2_chi1_" + WhichJets)
-        Reco2d_Chi2=Get2DHist(dataFile,"dijet_mass2_chi2_" + WhichJets)
-        Reco2d_Chi3=Get2DHist(dataFile,"dijet_mass2_chi3_" + WhichJets)
-        Reco2d_Chi4=Get2DHist(dataFile,"dijet_mass2_chi4_" + WhichJets)
+    
 
-        Gen2d_Chi1=Get2DHist(dataFile,"dijet_mass2_chi1_" + "GEN")
-        Gen2d_Chi2=Get2DHist(dataFile,"dijet_mass2_chi2_" + "GEN")
-        Gen2d_Chi3=Get2DHist(dataFile,"dijet_mass2_chi3_" + "GEN")
-        Gen2d_Chi4=Get2DHist(dataFile,"dijet_mass2_chi4_" + "GEN")
+    Reco2d_Chi1=Get2DHist(dataFile,"dijet_mass2_chi1")
+    Reco2d_Chi2=Get2DHist(dataFile,"dijet_mass2_chi2")
+    Reco2d_Chi3=Get2DHist(dataFile,"dijet_mass2_chi3")
+    Reco2d_Chi4=Get2DHist(dataFile,"dijet_mass2_chi4")        
 
-    else:
-
-        Reco2d_Chi1=Get2DHist(dataFile,"dijet_mass2_chi1")
-        Reco2d_Chi2=Get2DHist(dataFile,"dijet_mass2_chi2")
-        Reco2d_Chi3=Get2DHist(dataFile,"dijet_mass2_chi3")
-        Reco2d_Chi4=Get2DHist(dataFile,"dijet_mass2_chi4")        
-
-
+    
     ## get the Response matrix
     print "Response file: ",responseFile
     f = TFile.Open(responseFile)
@@ -123,40 +98,46 @@ if __name__ == '__main__':
     print response_m2c4
     print "============================================="
 
+    Response1=response_m2c1.Mresponse()
+    Response2=response_m2c2.Mresponse()
+    Response3=response_m2c3.Mresponse()
+    Response4=response_m2c4.Mresponse()
 
-    Reco2d=Reco2d_Chi1
-    print "CCLA: Reco2d ",Reco2d
-    response=response_m2c1
-    massBins=getMassBins(Reco2d)
+    Response2.Print()
+
+    responseOut=TFile("responseMatrices.root","RECREATE")
+    Response1.Write()
+    Response2.Write()
+    Response3.Write()
+    Response4.Write()
+
+    sys.exit()
     
-    chiHists1d=[]; chiTests1d=[]; unfChiHists1d=[]; covMatrix=[]; new_hists=[]
+    print "============================================="
+    singular1=TDecompSVD(Response1)
+    print singular1.Condition()
+
+    sig1=singular1.GetSig()
+    sig1.Print()
+
+    print "============================================="
+    singular2=TDecompSVD(Response2)
+    print singular2.Condition()
+    
+    sig2=singular2.GetSig()
+    sig2.Print()
+    
+    Reco2d=Reco2d_Chi1
+    massBins=getMassBins(Reco2d)
+
+    chiHists1d=[]; chiTests1d=[]; unfChiHists1d=[]
     for i in range(1,len(massBins)-1):
         minMass=int(massBins[i])
         maxMass=int(massBins[i+1])
         strMinM=str(int(minMass)); strMaxM=str(int(maxMass)); 
         if minMass<2400: continue
 
-        chiHist="dijet_"+strMinM+"_"+strMaxM+"_chi"
-
-        if doMC:
-            
-            chiHist="dijet_M2_"+strMinM+"_"+strMaxM+"_chi"
-            chiHist=chiHist+WhichJets
-            if minMass<4800:
-                Gen2d=Gen2d_Chi1
-            elif minMass<6000:
-                #Gen2d=Gen2d_Chi2
-                Gen2d=Gen2d_Chi2
-            else:
-                #Gen2d=Gen2d_Chi3
-                Gen2d=Gen2d_Chi3
-            
-        print i,chiHist, minMass,maxMass
-        horg=GetHist(dataFile,chiHist)
-
-        #horg=reBin(horg)
-
-        if minMass<4800:
+        if minMass<2400:
             Reco2d=Reco2d_Chi1
             response=response_m2c1
         
@@ -173,35 +154,15 @@ if __name__ == '__main__':
             #Reco2d.SetBinContent(11,1,16)
             #Reco2d.SetBinError(11,1,4)
 
-        if not saveSMR:
-            chiHists1d.append(horg)
-        else:
-            chiHists1d.append(Proj2D_Y(Reco2d,minMass,maxMass,Reco2d.GetName(),True))
-        
-        if compToGen:
-            chiTests1d.append(Proj2D_Y(Gen2d,minMass,maxMass,Gen2d.GetName(),True))
-        else:
-            chiTests1d.append(Proj2D_Y(Reco2d,minMass,maxMass,Reco2d.GetName(),True))
+        chiTests1d.append(Proj2D_Y(Reco2d,minMass,maxMass,Reco2d.GetName(),True))
 
         ## now do unfolding
-        print "CCLA: Bayes Unfolding ",Reco2d,"using matix ",response
-
-        if DAgostini == True:
-            unfold2d = RooUnfoldBayes     (response, Reco2d, NITER)
-        else: 
-            unfold2d = RooUnfoldInvert    (response, Reco2d)
-            
+        print "CCLA: D'Agostini Unfolding ",Reco2d,"using matix ",response
+        
+        unfold2d = RooUnfoldInvert     (response, Reco2d)
         unfold2d.Print()
 
-        new_hists.append(unfold2d)
-
-        unfold2d.SetNToys(3000)
-        
-        hUnf2d = unfold2d.Hreco(2)
-
-        hErr2d = unfold2d.Ereco(3)
-
-        covMatrix.append(hErr2d)
+        hUnf2d= unfold2d.Hreco(2)
             
         print "XXX: ",hUnf2d
         hD=Proj2D_Y(hUnf2d,minMass,maxMass,hUnf2d.GetName(),True)
@@ -211,30 +172,16 @@ if __name__ == '__main__':
         unfChiHists1d.append(h)
         f.Close()
 
-    if CheckProj:
-        print chiHists1d
-        print chiTests1d
-        plotComparison(chiHists1d,chiTests1d,"Projection",True,doMC)
-
-
-    if PlotUnfolded:  ## print UnfChiHists
-        
-        print chiTests1d
-        print unfChiHists1d
-        if PlotUnfoldedAndFit:
-            compAndDrawIt(chiTests1d,unfChiHists1d)
-        else:
-            plotComparison(chiTests1d,unfChiHists1d,"Unfolded",True,doMC)
-
+    plotComparison(chiTests1d,unfChiHists1d,"Unfolded",True,doMC)
 
     ## now write out the unfolded histograms
     outname=os.path.basename(dataFile)
     outname=outname[:outname.find(".root")] 
 
     if WhichSmearing == "Smeared":
-        outname=outDir+"/Unfolded_" +outname + "_from" + smearFunc + "_" +MCSAMPLE+".root"
+        outname=outDir+"/Unfolded_" +outname + "_from" + smearFunc + "_" +MCSAMPLE+"_MatrixInvert.root"
     else:
-        outname=outDir+"/Unfolded_" +outname + "_from" + WhichSmearing + "_" +MCSAMPLE+".root"
+        outname=outDir+"/Unfolded_" +outname + "_from" + WhichSmearing + "_" +MCSAMPLE+"_MatrixInvert.root"
 
     print "\n\n%Response file: ",responseFile
     print "%Writing unfolded histograms to: ",outname
@@ -244,20 +191,13 @@ if __name__ == '__main__':
     for i in range(len(unfChiHists1d)):
         hOrg=chiTests1d[i]
         hUnf=unfChiHists1d[i]
-        if saveSMR:
-            hSmr=chiHists1d[i]
         orgname=hOrg.GetName()
         newname=orgname + "_unfolded"
         hUnf.SetName(newname)
-        hErr=covMatrix[i]
 
         hOrg.SetLineColor(ROOT.kRed)
         hOrg.Write()
         hUnf.Write()
-        hErr.Write()
-        if saveSMR:
-            hSmr.Write()
-        
     outfile.Close()
 
     ## print ROOT.TH1.kPoisson, ROOT.TH1.kPoisson2,ROOT.TH1.kNormal
@@ -266,3 +206,4 @@ if __name__ == '__main__':
     if os.getenv("FROMGUI") == None:
         print "Not from GUI"
         # raw_input('\npress return to end the program...')
+    

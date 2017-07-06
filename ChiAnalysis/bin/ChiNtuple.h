@@ -713,7 +713,7 @@ double ChiNtuple::TriggerEff2016(double mass, double chi){
     
 
   double xx=mass;
-  if (xx<1500.) xx=1500.;
+  if (xx<1900.) xx=1900.;
   
   eff=par[0]/2.+par[0]/2.*TMath::Erf((xx-par[1])/par[2]);
   return eff;

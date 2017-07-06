@@ -193,7 +193,8 @@ private :
 
   double SmearFactor(double,double, double);
   double SmearFunc(double, double, double, double, double, double);
-  double TriggerEff(double, double);
+  double TriggerEff2015(double, double);
+  double TriggerEff2016(double, double);  
   TRandom rnd;  
 };
 
@@ -281,7 +282,7 @@ void ChiNtuple::SetXSWeight(const double & wt){
 }
 
 void ChiNtuple::SetTrigger(const string & x){
-  if (x != "PFHT650" && x != "PFHT800"){
+  if (x != "PFHT650" && x != "PFHT800" && x != "PFHT900"){
     std::cout << "Invalid Trigger Path..." << std::endl;
     WhichTrigger="None";
   }else{
@@ -422,15 +423,15 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   m_HistNames[hname] =  Book1dHist(hname, htitle, njr, jrmin, jrmax, true );
   
   hname="Resp3D"; htitle="Jet response vs pt,y";
-  m_HistNames3D[hname]=Book3dHist(hname, htitle, 300, 0. ,3000., neta, etamin, etamax, njr, jrmin, jrmax, true);
+  m_HistNames3D[hname]=Book3dHist(hname, htitle, 300, 0. ,3500., neta, etamin, etamax, njr, jrmin, jrmax, true);
 
   hname="SmrResp3D"; htitle="Smeared Jet response vs pt,y";
-  m_HistNames3D[hname]=Book3dHist(hname, htitle, 300, 0. ,3000., neta, etamin, etamax, njr, jrmin, jrmax, true);
+  m_HistNames3D[hname]=Book3dHist(hname, htitle, 300, 0. ,3500., neta, etamin, etamax, njr, jrmin, jrmax, true);
 
   Float_t mbins1[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,13000};
   Int_t  nmbins1 = sizeof(mbins1)/sizeof(Float_t) - 1;
 
-  Float_t mbins2[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,5400,6000,8000,10000,13000};
+  Float_t mbins2[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,5400,6000,13000};
   Int_t  nmbins2 = sizeof(mbins2)/sizeof(Float_t) - 1;
   
   Float_t chibins1[] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
@@ -463,7 +464,6 @@ void ChiNtuple::BookHistograms(const std::string & fname){
 
   for ( Int_t j = 0; j < (nchibins4+1); ++j )
     chiBins4.push_back(chibins4[j]);
-
   
   dijet_mass1_chi1 = new TH2F("dijet_mass1_chi1","M_{jj} vs #chi",nmbins1,mbins1,nchibins1,chibins1);
   dijet_mass1_chi2 = new TH2F("dijet_mass1_chi2","M_{jj} vs #chi",nmbins1,mbins1,nchibins2,chibins2);
@@ -496,23 +496,23 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   Hlist->Add(dijet_mass2_chi3);        
   Hlist->Add(dijet_mass2_chi4);        
 
-  for ( size_t j = 0; j < (massBins1.size()-1); ++j )
+  for ( size_t j = 0; j < (massBins2.size()-1); ++j )
   {
       std::stringstream name;
-      name << "dijet_" << massBins1[j] << "_" << massBins1[j+1] << "_" << "chi";
+      name << "dijet_" << massBins2[j] << "_" << massBins2[j+1] << "_" << "chi";
       hists.push_back(new TH1F(name.str().c_str(),name.str().c_str(),15,1,16));
       hists[j]->Sumw2();
       Hlist->Add(hists[j]);
 
       if (!IsData){
 	std::stringstream gname;
-	gname << "dijet_" << massBins1[j] << "_" << massBins1[j+1] << "_" << "chi_gen";
+	gname << "dijet_" << massBins2[j] << "_" << massBins2[j+1] << "_" << "chi_gen";
 	ghists.push_back(new TH1F(gname.str().c_str(),gname.str().c_str(),15,1,16));
 	ghists[j]->Sumw2();
 	Hlist->Add(ghists[j]);
 
 	std::stringstream sname;	
-	sname << "dijet_" << massBins1[j] << "_" << massBins1[j+1] << "_" << "chi_smr";
+	sname << "dijet_" << massBins2[j] << "_" << massBins2[j+1] << "_" << "chi_smr";
 	shists.push_back(new TH1F(sname.str().c_str(),sname.str().c_str(),15,1,16));
 	shists[j]->Sumw2();
 	Hlist->Add(shists[j]);
@@ -523,7 +523,7 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   {
       std::stringstream name;
       name << "dijet_" << chiBins1[j] << "_chi1_" << chiBins1[j+1] << "_" << "mass1";
-      mhists.push_back(new TH1F(name.str().c_str(),name.str().c_str(),nmbins1,mbins1));
+      mhists.push_back(new TH1F(name.str().c_str(),name.str().c_str(),nmbins2,mbins2));
       mhists[j]->Sumw2();
       Hlist->Add(mhists[j]);
   }
@@ -610,7 +610,7 @@ TH3F* ChiNtuple::Book3dHist(const char* name, const char* title, Int_t nbinsx, D
   return h;
 }
 
-double ChiNtuple::TriggerEff(double mass, double chi){
+double ChiNtuple::TriggerEff2015(double mass, double chi){
   double eff=1.; 
   if (!IsData) return eff;
   if (mass<1000.) return eff;
@@ -684,6 +684,51 @@ if ( chi <= 9){
 
   double xx=mass;
   if (xx<1500.) xx=1500.;
+  
+  eff=par[0]/2.+par[0]/2.*TMath::Erf((xx-par[1])/par[2]);
+  return eff;
+  
+}
+
+double ChiNtuple::TriggerEff2016(double mass, double chi){
+  double eff=1.; 
+  if (!IsData) return eff;
+  if (mass<1000.) return eff;
+  
+  double par[] { 0, 0., 0. }; 
+
+  // prompt reco data correction factors  
+//   if ( chi <= 14){
+//     return eff;
+//   }else if ( chi <= 15){
+//     par[0] = 1.0;
+//     par[1] = 1707.08830701; 
+//     par[2] = 157.415787067;
+//   }else if ( chi <= 16){
+//     par[0] = 1.0;
+//     par[1] = 1738.6849109;
+//     par[2] = 174.329521835;
+//   }else{
+//     return eff;
+//   }  
+
+  // re-reco data correction factors v1
+  if ( chi <= 14){
+    return eff;
+  }else if ( chi <= 15){
+    par[0] = 1.0;
+    par[1] = 1605.72602433; 
+    par[2] = 263.423655296;
+  }else if ( chi <= 16){
+    par[0] = 1.0;
+    par[1] = 1647.137801;
+    par[2] = 291.50805604;
+  }else{
+    return eff;
+  }    
+  
+  double xx=mass;
+  if (xx<1900.) xx=1900.;
   
   eff=par[0]/2.+par[0]/2.*TMath::Erf((xx-par[1])/par[2]);
   return eff;

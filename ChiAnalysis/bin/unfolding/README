@@ -1,0 +1,20 @@
+Download RooUnfold package from github repo and compile 
+
+> git clone git@github.com:skluth/RooUnfold.git
+> source setup_root.sh (or source setup_root.csh if using c-shell. If running setup_root.csh, update THISHOST to point to lxplus or cmslpc cluster)
+> cd RooUnfold
+> make
+> cd -
+
+Create response matrix.  Make sure the massBinsX and chiBinsX arrays defined in CreateResponseMatrix.py match the corresponding mbinsX and chiBinsX arrays in ChiNtuple.h. Run a test to see if everything runs ok
+
+> python CreateResponseMatrix.py -n 50000 response.root /eos/cms/store/caf/user/apana/Chi_13TeV/ChiNtuples/MC/80x/chiNtuple_25nsMC10_flatQCD_CB2_AK4SF.root
+
+This will create the output file response.root containing the response matrices. Specifying n=0, or removing the -n option means run over all events. Multiple input root files can be listed on the command line, or you can put them in an inputfile list and use that filename in the command.  Running over all events takes a long time, so the big jobs should be run as a batch jobs. Use the submit.sh script to do this. You can also specify --test or --train to create independent testing and training files
+
+
+Unfolding is done in the macro unfold.py. You will need to update the datafile and responseFile variables to point to your histogram files containing the data chi distributions and response matrices. There are also variables located at the top of the file that will perform some cross checks.  CheckProj checks whether the chi distributions extracted from the 2-d mass-chi histograms match the 1d histograms.  PlotUnfolded plots the raw and unfolded histograms.
+
+> python unfold.py. 
+
+

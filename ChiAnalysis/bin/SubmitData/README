@@ -1,0 +1,18 @@
+Instructions for making data ntuples
+------------------------------------
+
+o Make the input filelists from ntuples in Andreas' PromptData2016 EOS directory. Should run OK without any changes to the makeFileLists.py scripts. Filelists will go in filelists directory which will be created automatically when running the script.
+
+> python makeFileLists.py
+
+o Create the output histogram directory. This should be called hsts.  If you wish to use a different location, the ouput variable in chiNtuple_cfg.py should be updated accordingly.
+
+> mkdir hsts
+
+o Run the submitData.sh script to submit the jobs to the CERN batch system.
+
+> ./submitData.sh
+
+o After running the output histograms should probably be moved to and EOS directory as the files are rather large
+
+

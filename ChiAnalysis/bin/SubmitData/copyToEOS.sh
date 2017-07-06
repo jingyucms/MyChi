@@ -2,12 +2,16 @@
 
 EOS=/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select
 
-EOSDIR=/eos/cms/store/caf/user/apana/Chi_13TeV/ChiNtuples/Data/76x
+EOSDIR=/eos/cms/store/caf/user/apana/Chi_13TeV/ChiNtuples/Data/80x
 
-for srcfile in chiNtuple_PFHT650_20160530.root
+cd hsts
+## for srcfile in chiNtuple_PFHT650_20160530.root
+for srcfile in `ls *.root`
 do
+    echo "copying $srcfile to $EOSDIR"
     $EOS cp $srcfile $EOSDIR/$srcfile
 done
+cd -
 
 
 

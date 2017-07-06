@@ -8,17 +8,13 @@ import glob
 
 ###############################################################################################
 
-FilesPerCfg=5  ##  number of files per fileslist
+FilesPerCfg=100  ##  number of files per fileslist
 
-#INDIR="/afs/cern.ch/work/z/zhangj/public/forChi"
-#INDIR="/eos/cms/store/cmst3/user/hinzmann/dijet_angular/QCD_pythia8"
-#OUTDIR="filelists/flatPythia8"
-#ptBins=["25nsMC10"]
-#searchstring="datacard_shapelimit13TeV_"
-
-INDIR="/eos/cms/store/cmst3/user/hinzmann/dijet_angular/QCD_herwigpp"
-OUTDIR="filelists/flatHerwigpp"
-ptBins=["25nsMC10"]
+#INDIR="/eos/cms/store/cmst3/user/hinzmann/dijet_angular/PromptData2016/"
+INDIR="/eos/cms/store/cmst3/user/hinzmann/dijet_angular/ReRecoData2016v3/"
+#OUTDIR="filelists/PromptData2016"
+OUTDIR="filelists/ReRecoData2016v3"
+ptBins=["data"]
 searchstring="datacard_shapelimit13TeV_"
 
 ## INDIR="/eos/cms/store/cmst3/user/hinzmann/dijet_angular/QCDv7/QCD_*_TuneCUETP8M1_13TeV_pythia8_RunIIFall15MiniAODv2_PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1"
@@ -26,14 +22,10 @@ searchstring="datacard_shapelimit13TeV_"
 ## ptBins=["Pt_170to300","Pt_300to470","Pt_470to600","Pt_600to800","Pt_800to1000","Pt_1000to1400","Pt_1400to1800","Pt_1800to2400","Pt_2400to3200","Pt_3200toInf"]
 ## searchstring="EXOVVTree_QCD_"
 
-
-#INDIR="/eos/cms/store/cmst3/user/hinzmann/dijet_angular/QCD_HT_*"
-#OUTDIR="filelists/madgraphMLM"
+## INDIR=/eos/cms/store/cmst3/user/hinzmann/dijet_angular/QCDv7
+## OUTDIR="filelists/madgraphMLM"
 ## ptBins=["HT300to500","HT500to700","HT700to1000","HT1000to1500","HT1500to2000","HT2000toInf"]
-## ptBins=["300_madgraph","500_madgraph","700_madgraph","1000_madgraph","1500_madgrap","2000_madgraph"]
-#ptBins={"HT300to500":"300_madgraph","HT500to700":"500_madgraph","HT700to1000":"700_madgraph","HT1000to1500":"1000_madgraph","HT1500to2000":"1500_madgrap","HT2000toInf":"2000_madgraph"}
-#searchstring="datacard_shapelimit13TeV_"
-
+## searchstring="EXOVVTree_"
 
 eosCommand="/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select" ## if this doesn't work check name using ouput from "which eos"
 
@@ -113,13 +105,12 @@ if __name__ == "__main__":
     FILEMAX=100000
 
     workingDir=os.getcwd()
-    
     for ptBin in ptBins:
         os.chdir(workingDir)
         
         inputDir=INDIR
         if inputDir.find("*")>-1:
-            inputDir=inputDir.replace("*",ptBins[ptBin])
+            inputDir=inputDir.replace("*",ptBin)
 
         print "\nSearching for root files in: ",inputDir,"\n"
         fileList=GetFileList(inputDir,searchstring)
@@ -133,7 +124,7 @@ if __name__ == "__main__":
         print "\nNumber of files found: ",len(fileList)
         print "First file: ",fileList[0],"\n"
 
-        if ptBin == "25nsMC10":
+        if ptBin == "25nsMC10" or ptBin == "data":
             OutName="ntuples.list"
         else:
             OutName="ntuples_" + ptBin + ".list"

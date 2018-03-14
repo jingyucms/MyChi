@@ -6,7 +6,7 @@
   gStyle->SetOptLogy(1);
   gStyle->SetOptLogx(1);
   gStyle->SetOptLogz(0);
-  gStyle->SetPaintTextFormat("4.3f");
+  gStyle->SetPaintTextFormat("4.5f");
 
   // const Int_t NRGBs = 5;
   // const Int_t NCont = 255;
@@ -19,15 +19,16 @@
   // TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
   // gStyle->SetNumberContours(NCont);
 
-  TString Sample="pythia8_Pt_170toInf_CB_AK4SF";
+  // TString Sample="pythia8_Pt_170toInf_CB_AK4SF";
+  TString Sample="madgraphMLM_Axial_Dijet_LO_Mphi_6000_1_1p0_1p0_CB_AK4SF";
   
-  // TFile *_file0 = new TFile("Response_CB1.6_wExtra_pythia8_ci_170pt13000_partial_20151123.root");
+  TFile *_file0 = new TFile("./Response_"+Sample+"_20171012.root");
   // TFile *_file0 = new TFile("../ResponseMatrices/Response_Pt_170to13000_CB2_AK4SF_partial.root");
-  TFile *_file0 = new TFile("ResponseMatrices/Response_"+Sample+"_20170130.root");
+  // TFile *_file0 = new TFile("ResponseMatrices/Response_"+Sample+"_20170130.root");
   
   // _file0->ls();
 
-  string hname="dijet_massgen_massSMR_1";
+  string hname="dijet_massgen_massSMR_2";
   // string hname="dijet_massgen_massRECO_1";
   TH2F *h = (TH2F*)_file0->Get(hname.c_str());
 

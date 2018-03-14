@@ -22,6 +22,9 @@
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/WeightsInfo.h"
+
 #include "DataFormats/Math/interface/deltaR.h"
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 
@@ -115,6 +118,7 @@ int main(int argc, char* argv[])
   // now get each parameter
   const edm::ParameterSet& ana = process.getParameter<edm::ParameterSet>("GenChiAnalysis");
   edm::InputTag GenJetCollection_( ana.getParameter<edm::InputTag>("GenJets") );
+  edm::InputTag LHEEventProduct_(ana.getParameter<edm::InputTag>("Source"));
   double XS_( ana.getParameter<double>("CrossSection") );
   string SMEARING_( ana.getParameter<string>("Smearing") );
   bool doAK4_sf( ana.getParameter<bool>("AK4_SF") );
@@ -122,6 +126,7 @@ int main(int argc, char* argv[])
   double smearMax_( ana.getParameter<double>("SmearMax") );
   bool doSys_( ana.getParameter<bool>("doSys") );
   bool sysPlus_( ana.getParameter<bool>("sysPlus") );
+  bool dmWeight_( ana.getParameter<bool>("dmWeight") );
   // book a set of histograms
   string outFile=outputHandler_.file().c_str();
   cout << "Output written to: " << outFile << endl;
@@ -129,6 +134,8 @@ int main(int argc, char* argv[])
   TFileDirectory dir = fs.mkdir("chiAnalysis");
   TFile* OutFile = TFile::Open(outputHandler_.file().c_str(),"RECREATE");
   OutFile->cd();
+
+  //cout<<"debug0"<<endl;
 
   if (SMEARING_ == "Gaussian") smearMax_=100.;
 
@@ -194,7 +201,10 @@ int main(int argc, char* argv[])
   Int_t IsData;
   Int_t HTBin(-1);
   Int_t PTBin(-1);
-  Int_t MBin(-1);  
+  Int_t MBin(-1);
+
+  std::map<string,float> dmWeights;
+  Float_t dmXsec;
 
   OutFile->cd();
   _outTree = new TTree("DijetTree", "DijetTree");
@@ -212,6 +222,9 @@ int main(int argc, char* argv[])
   _outTree->Branch("recoDijets", &recoDijets, "dijetFlag/I:mass/F:pt/F:chi/F:yboost/F:pt1/F:eta1/F:phi1/F:e1/F:pt2/F:eta2/F:phi2/F:e2/F");
   _outTree->Branch("genDijets",  &genDijets , "dijetFlag/I:mass/F:pt/F:chi/F:yboost/F:pt1/F:eta1/F:phi1/F:e1/F:pt2/F:eta2/F:phi2/F:e2/F");
   _outTree->Branch("smrDijets",  &smrDijets , "dijetFlag/I:mass/F:pt/F:chi/F:yboost/F:pt1/F:eta1/F:phi1/F:e1/F:pt2/F:eta2/F:phi2/F:e2/F");
+
+  _outTree->Branch("dmWeights", &dmWeights);
+  _outTree->Branch("dmXsec",&dmXsec);
 
   // ccla Setup the smearing
   bool     doPTSmearing(true); // set to false to smear in eta & phi (I don't think this option works correctly presently)
@@ -376,6 +389,11 @@ int main(int argc, char* argv[])
 	// Handle to the genjet collection
 	edm::Handle<reco::GenJetCollection>  genJets;
 	event.getByLabel( GenJetCollection_, genJets );
+	
+	edm::Handle<LHEEventProduct> EvtProd;
+	event.getByLabel(LHEEventProduct_, EvtProd);
+
+	std::vector<gen::WeightsInfo> weightsInfo=EvtProd->weights();
 
 	if (genJets.isValid()){
 	  if (Debug_)std::cout << "genJets size: " << genJets->size() << std::endl;
@@ -402,6 +420,15 @@ int main(int argc, char* argv[])
 	//True_Num=1.;
 	IsData=false;
 
+	if (dmWeight_){
+	  for (std::vector<gen::WeightsInfo>::const_iterator it=weightsInfo.begin(); it!=weightsInfo.end(); ++it)
+	    dmWeights[it->id]=it->wgt;
+	  dmXsec=EvtProd->originalXWGTUP()*1000;
+	}
+	else{
+	  dmWeights["No_Evt_Weight"]=1.;
+	  dmXsec=1.;
+	}
 
 	double initval=-999.;
 	genDijets.dijetFlag=0;
@@ -493,7 +520,7 @@ int main(int argc, char* argv[])
 	      if (doPTSmearing){
 	      
 		if (SMEARING_ == "Gaussian"){
-		  //fact=SmearFactor(genpt,std::abs(geneta),doSys_,sysPlus_);  // Suvadeep's Gaussian smearing
+		  //fact=SmearFactor(genpt,std::abs(geneta),doSys_,sysPlus_);  // Suvadeep"s Gaussian smearing
 		  fact=jetresponse.doGaussianSmearing(genpt,geneta);
 		  // std::cout <<  genpt << "\t" << geneta << "\t" << fact << std::endl;
 		}else if (SMEARING_ == "CrystalBall"){

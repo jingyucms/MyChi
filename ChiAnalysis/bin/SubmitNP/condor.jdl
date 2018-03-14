@@ -1,0 +1,12 @@
+universe = vanilla
+Executable = run_condor.csh
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT
+Transfer_Input_Files = run_condor.csh
+Output = genCFGS/$ENV(SAMPLE)CrystalBall/m$ENV(MBIN)/condor_$(Cluster)_$(Process).stdout
+Error = genCFGS/$ENV(SAMPLE)CrystalBall/m$ENV(MBIN)/condor_$(Cluster)_$(Process).stderr
+Log = genCFGS/$ENV(SAMPLE)CrystalBall/m$ENV(MBIN)/condor_$(Cluster)_$(Process).log
+x509userproxy = $ENV(X509_USER_PROXY)
+Arguments = GenChiNtuple_cfg_$(Process).py
+getenv = True
+Queue 6

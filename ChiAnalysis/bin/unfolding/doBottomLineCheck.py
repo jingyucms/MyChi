@@ -9,8 +9,8 @@ from scripts import plotComparison, doPoisson, getMassBins, compAndDrawIt
 
 #chi_binning=array.array('d',[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
 
-#outDir="./results_MatrixInvert/"
-outDir="./results_Iter2/"
+outDir="./results_MatrixInvert/"
+#outDir="./results_Iter2/"
 
 def drawUncert(h1,h2,massbin,chi_binning):
 
@@ -25,6 +25,8 @@ def drawUncert(h1,h2,massbin,chi_binning):
     raw=TH1F("raw data statistical error","raw data statistical error",len(chi_binning)-1,chi_binning)
     unfolded=TH1F("unfolded data statistical error","raw data statistical error",len(chi_binning)-1,chi_binning)
 
+    print h2.GetBinError(1)**2
+    
     for b in range(1,len(chi_binning)):
         
         raw.SetBinContent(b,h1.GetBinError(b)/h1.GetBinContent(b))
@@ -110,7 +112,7 @@ if __name__ == '__main__':
     
     file1=TFile(outDir+"Unfolded_chiNtuple_dataReReco_v3_PFHT900_fromCB_AK4SF_pythia8_Pt_170toInf.root")
     #file1=TFile(outDir+"Unfolded_chiNtuple_PFHT800_20160530_fromCB_AK4SF_DataToMCSF_Pythia_M_1000toInf.root")
-    file2=TFile(outDir+"Unfolded_Response_pythia8_Pt_170toInf_CB_AK4SF_20170130_fromCB_AK4SF_pythia8_Pt_170toInf.root")
+    file2=TFile("./results_Iter2/"+"Unfolded_Response_pythia8_Pt_170toInf_CB_AK4SF_20170130_fromCB_AK4SF_pythia8_Pt_170toInf.root")
     #file2=TFile(outDir+"Unfolded_Response_herwigpp_Pt_170toInf_CB_AK4SF_20170201_fromCB_AK4SF_pythia8_Pt_170toInf.root")
     #file2=TFile(outDir+"Unfolded_Response_madgraphMLM_HT_300toInf_CB_AK4SF_20170206_fromCB_AK4SF_pythia8_Pt_170toInf.root")
 
@@ -163,13 +165,13 @@ if __name__ == '__main__':
             gen_mc_rebin=gen_mc.Rebin(len(chi_binning)-1,gen_mc.GetName()+"_rebin",chi_binning)
 
         #chi_binning=array.array('d',[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
-        #drawUncert(data_raw_rebin,data_unfolded_rebin,massbins[i-1],chi_binning)
+        drawUncert(data_raw_rebin,data_unfolded_rebin,massbins[i-1],chi_binning)
         #drawUncert(data_raw,data_unfolded,massbins[i-1],chi_binning)
 
         #chi_binning=array.array('d',[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
         
-        chismear=calcChiSquare(data_raw_rebin,smr_mc_rebin,chi_binning)
-        chiunfold=calcChiSquare(data_unfolded_rebin,gen_mc_rebin,chi_binning)
+        #chismear=calcChiSquare(data_raw_rebin,smr_mc_rebin,chi_binning)
+        #chiunfold=calcChiSquare(data_unfolded_rebin,gen_mc_rebin,chi_binning)
 
-        print str(massbins[i-1][0])+" < m_{jj} < "+str(massbins[i-1][1]), chiunfold,chismear
+        #print str(massbins[i-1][0])+" < m_{jj} < "+str(massbins[i-1][1]), chiunfold,chismear
         

@@ -27,15 +27,15 @@ PlotUnfolded=True
 PlotUnfoldedAndFit=False  # make ratio histogram and fit the ratio (aka fit to get uncertainty)
 #PlotUnfoldedAndFit=True
 
-compToGen=False  # compare SMR MC to Gen MC, use when do closure test
+compToGen=False  # compare Unfolded SMR MC to Gen MC, use when do closure test
 #compToGen=True
 
-saveSMR=False  # use when you want to save smr mc distribution in output foot file
+saveSMR=False  # use when you want to save smr mc distribution in output root file
 #saveSMR=True
 
 suffix=".gif"
 
-DAgostini=True
+DAgostini=False
 
 if DAgostini==False:
     outDir="results_MatrixInvert"
@@ -83,10 +83,10 @@ if __name__ == '__main__':
     if doMC:
         #dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20161214.root"
         #dataFile="ResponseMatrices/Response_pythia8_Pt_170toInf_CB_AK4SF_20161202.root"
-        dataFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
+        #dataFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
         #dataFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_Test_" +date +"_Test.root"
         #responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_Train_" +date +"_Train.root"
-        #dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20170206.root"
+        dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20170206.root"
         #dataFile="ResponseMatrices/Response_herwigpp_Pt_170toInf_CB_AK4SF_20170201.root"
     ## get 2D reco hist to be Unfolded
     if doMC:
@@ -108,7 +108,12 @@ if __name__ == '__main__':
         Reco2d_Chi3=Get2DHist(dataFile,"dijet_mass2_chi3")
         Reco2d_Chi4=Get2DHist(dataFile,"dijet_mass2_chi4")        
 
-
+        Gen2d_Chi1=Get2DHist(responseFile,"dijet_mass2_chi1_" + "GEN")
+        Gen2d_Chi2=Get2DHist(responseFile,"dijet_mass2_chi2_" + "GEN")
+        Gen2d_Chi3=Get2DHist(responseFile,"dijet_mass2_chi3_" + "GEN")
+        Gen2d_Chi4=Get2DHist(responseFile,"dijet_mass2_chi4_" + "GEN")
+        
+        
     ## get the Response matrix
     print "Response file: ",responseFile
     f = TFile.Open(responseFile)
@@ -142,14 +147,15 @@ if __name__ == '__main__':
             
             chiHist="dijet_M2_"+strMinM+"_"+strMaxM+"_chi"
             chiHist=chiHist+WhichJets
-            if minMass<4800:
-                Gen2d=Gen2d_Chi1
-            elif minMass<6000:
-                #Gen2d=Gen2d_Chi2
-                Gen2d=Gen2d_Chi2
-            else:
-                #Gen2d=Gen2d_Chi3
-                Gen2d=Gen2d_Chi3
+        #chiHist=chiHist+'GEN'
+        if minMass<4800:
+            Gen2d=Gen2d_Chi1
+        elif minMass<6000:
+            #Gen2d=Gen2d_Chi2
+            Gen2d=Gen2d_Chi2
+        else:
+            #Gen2d=Gen2d_Chi3
+            Gen2d=Gen2d_Chi3
             
         print i,chiHist, minMass,maxMass
         horg=GetHist(dataFile,chiHist)
@@ -184,7 +190,7 @@ if __name__ == '__main__':
             chiTests1d.append(Proj2D_Y(Reco2d,minMass,maxMass,Reco2d.GetName(),True))
 
         ## now do unfolding
-        print "CCLA: Bayes Unfolding ",Reco2d,"using matix ",response
+        print "CCLA: Unfolding ",Reco2d,"using matix ",response
 
         if DAgostini == True:
             unfold2d = RooUnfoldBayes     (response, Reco2d, NITER)
@@ -195,11 +201,21 @@ if __name__ == '__main__':
 
         new_hists.append(unfold2d)
 
-        unfold2d.SetNToys(3000)
+        unfold2d.SetNToys(30000)
         
         hUnf2d = unfold2d.Hreco(2)
 
-        hErr2d = unfold2d.Ereco(3)
+        hErr2d = unfold2d.Ereco(3)   
+
+        #chi2 = RooUnfold.Chi2 (unfold2d,2)
+        chi2comp=Proj2D_Y(Gen2d,minMass,maxMass,Gen2d.GetName(),True)
+        hraw=Proj2D_Y(Reco2d,minMass,maxMass,Gen2d.GetName(),True)
+        hUnf1d=Proj2D_Y(hUnf2d,minMass,maxMass,Gen2d.GetName(),True)
+        print "------",hraw.Integral(), hUnf1d.Integral(),hUnf2d.Integral(), chi2comp.Integral()
+        chi2comp.Scale(hUnf1d.Integral()/chi2comp.Integral())
+        #chi2 = unfold2d.Chi2 (hUnf1d,2)
+        chi2 = hUnf2d.Chi2 (hUnf1d,2)
+        print "---chi square:",chi2
 
         covMatrix.append(hErr2d)
             

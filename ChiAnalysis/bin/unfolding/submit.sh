@@ -50,7 +50,7 @@ do
     fi
     
     echo $logfile
-    bsub -q ${QUEUE} -oo logs/$logfile toBatch.sh ${outfile} ${rootfile} ${Split}
-    #echo -q ${QUEUE} -oo logs/$logfile toBatch.sh ${outfile} ${rootfile} ${Split}
+    #bsub -q ${QUEUE} -oo logs/$logfile toBatch.sh ${outfile} ${rootfile} ${Split}
+    echo -q ${QUEUE} -oo logs/$logfile toBatch.sh ${outfile} ${rootfile} ${Split}
     #touch ${rootfile}
 done

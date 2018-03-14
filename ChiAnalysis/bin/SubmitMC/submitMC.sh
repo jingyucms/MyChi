@@ -1,8 +1,12 @@
 #!/bin/sh
 
-QUEUE=1nd
-## QUEUE=8nm
+#QUEUE=1nd
+QUEUE=8nh
 SUB_SCRIPT=toBatchCHI.sh
+
+ulimit -a
+ulimit -S -c 0
+ulimit -a
 
 #####################################################################################
 function Submit()
@@ -46,14 +50,15 @@ COUNTER=0
 
 config=chiNtuples_MC_cfg.py
 
-smrMAX=2      # set to 0 (2) for Gaussian (Crystal Ball) smearing
-AK4sf=1       # set to 1 to turn on AK4 scale factor, 0=off
+smrMAX=2    # set to 0 (2) for Gaussian (Crystal Ball) smearing
+AK4sf=1      # set to 1 to turn on AK4 scale factor, 0=off
 DataToMCsf=0  # set to 1 to turn on DataToMC scale factor, 0=off
 SysErr=0      # +-1 to smear by additional +-10%,  anything else no addtional smearing    
 
-## GENERATOR=madgraphMLM
+#GENERATOR=madgraphMLM
 ## GENERATOR=pythia8
-GENERATOR=flatPythia8
+#GENERATOR=flatPythia8
+GENERATOR=flatHerwigpp
 
 if [ $smrMAX == 0 ]; then
     logDir=logs_${GENERATOR}_GS
@@ -83,6 +88,9 @@ then
 elif [[ "$GENERATOR" == "flatPythia8" ]]
 then
     ptBins="flatPythia8"
+elif [[ "$GENERATOR" == "flatHerwigpp" ]]
+then
+    ptBins="flatHerwigpp" 
 else
     ptBins="HT300to500 HT500to700 HT700to1000 HT1000to1500 HT1500to2000 HT2000toInf"
 fi
@@ -94,9 +102,12 @@ do
     if [[ "$ptBin" == "flatPythia8" ]]
     then
 	nfiles=`ls -1 filelists/${GENERATOR}/ntuples_*list | wc -l`
+    elif [[ "$ptBin" == "flatHerwigpp" ]]
+    then
+	nfiles=`ls -1 filelists/${GENERATOR}/ntuples_*list | wc -l`
     else
-	## nfiles=`ls -1 filelists/madgraphMLM_newJES/ntuples_${ptBin}*list | wc -l`
-	nfiles=`ls -1 filelists/${GENERATOR}_newJES/ntuples_${ptBin}*list | wc -l`
+	nfiles=`ls -1 filelists/madgraphMLM/ntuples_${ptBin}*list | wc -l`
+	## nfiles=`ls -1 filelists/${GENERATOR}_newJES/ntuples_${ptBin}*list | wc -l`
     fi
     nfiles=$(($nfiles - 1))
     # nfiles=0

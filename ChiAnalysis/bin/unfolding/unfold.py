@@ -17,13 +17,16 @@ from myPyRootMacros import *
 from scripts import plotComparison, doPoisson, getMassBins, compAndDrawIt,reBin
 #===============================================================
 
+
 #doMC=True
 doMC=False
+
 CheckProj=False
 #CheckProj=True
 
 #PlotUnfolded=False
 PlotUnfolded=True
+
 PlotUnfoldedAndFit=False  # make ratio histogram and fit the ratio (aka fit to get uncertainty)
 #PlotUnfoldedAndFit=True
 
@@ -73,6 +76,7 @@ if __name__ == '__main__':
 
     #dataFile="/uscms_data/d3/jingyu/ChiAnalysis/jetUnfold/CMSSW_8_0_23/src/MyChi/ChiAnalysis/bin/unfolding/ResponseMatrices/chiNtuple_dataReReco_prelimJEC_PFHT900.root"
     #dataFile="/uscms_data/d3/jingyu/ChiAnalysis/jetUnfold/CMSSW_8_0_23/src/MyChi/ChiAnalysis/bin/unfolding/ResponseMatrices/chiNtuple_data_PFHT900_v2.root"
+
     dataFile="root://cmseos.fnal.gov//store/user/jingyu/jetUnfold/DataNtuple/chiNtuple_dataReReco_v3_PFHT900.root"
 
     responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
@@ -83,11 +87,13 @@ if __name__ == '__main__':
     if doMC:
         #dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20161214.root"
         #dataFile="ResponseMatrices/Response_pythia8_Pt_170toInf_CB_AK4SF_20161202.root"
+
         #dataFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
         #dataFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_Test_" +date +"_Test.root"
         #responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_Train_" +date +"_Train.root"
         dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20170206.root"
         #dataFile="ResponseMatrices/Response_herwigpp_Pt_170toInf_CB_AK4SF_20170201.root"
+
     ## get 2D reco hist to be Unfolded
     if doMC:
         
@@ -205,7 +211,7 @@ if __name__ == '__main__':
         
         hUnf2d = unfold2d.Hreco(2)
 
-        hErr2d = unfold2d.Ereco(3)   
+        hErr2d = unfold2d.Ereco(2)   
 
         #chi2 = RooUnfold.Chi2 (unfold2d,2)
         chi2comp=Proj2D_Y(Gen2d,minMass,maxMass,Gen2d.GetName(),True)
@@ -265,7 +271,9 @@ if __name__ == '__main__':
         orgname=hOrg.GetName()
         newname=orgname + "_unfolded"
         hUnf.SetName(newname)
+        
         hErr=covMatrix[i]
+
 
         hOrg.SetLineColor(ROOT.kRed)
         hOrg.Write()

@@ -210,12 +210,11 @@ def compAndDrawIt(hists1,hists2):
         
         h2divide.Divide(h1divide)
         #h2divide.Scale(1./h2divide.Integral())
-        
-        #function=TF1("Fit","pol1",1.,16.)
-        function=TF1("Fit","pol0",1.,16.)
-        function.SetLineColor(ROOT.kMagenta)
-        #function.SetParameters(0,1.)
 
+        function=TF1("Fit","pol1",1.,16.)
+        #function=TF1("Fit","pol0",1.,16.)
+        function.SetLineColor(ROOT.kMagenta)
+        function.SetParameters(0,1.)
         h2divide.Fit(function,"0R")
 
         SetHistColorAndMarker(h1,ROOT.kRed,20)
@@ -254,8 +253,10 @@ def compAndDrawIt(hists1,hists2):
         leg.SetShadowColor(0);
         leg.SetTextSize(0.038)
 
-        leg.AddEntry(h1,"Generated","lp");
+        leg.AddEntry(h1,"Smeared Generated","lp");
+        #leg.AddEntry(h1,"Data","lp");
         leg.AddEntry(h2,"Unfolded MC","lp");
+        #leg.AddEntry(h2,"Unfolded Data","lp");
         #if "CB2" in filename:
         #    leg.AddEntry(h3,"Crystal Ball Smeared","lp");
         #else:
@@ -272,6 +273,8 @@ def compAndDrawIt(hists1,hists2):
         pad2.cd()
 
         h2divide.SetMinimum(0.8)
+        if str(massbins[i][0])=="6000":
+            h2divide.SetMinimum(0.5)
         h2divide.SetMaximum(1.2)
         h2divide.GetXaxis().SetLabelSize(0.08)
         h2divide.GetXaxis().SetTitleSize(0.09)
@@ -304,10 +307,11 @@ def compAndDrawIt(hists1,hists2):
         #outfile=smearingUncertDir+"/SmearingUncert_" + Generator + "_" + massLow + "mass" + massHigh + "_GS"
         #else:
         #outfile="Pythia_Test_"+str(massbins[i][0])+"_"+str(massbins[i][1])
+        #outfile="Closure_Test_Trivial_p0_"+str(massbins[i][0])+"_"+str(massbins[i][1])
+        outfile="Pythia_Vs_MadGraph_MatrixInv_p1_"+str(massbins[i][0])+"_"+str(massbins[i][1])
+        #outfile="Size_of_Unfolding_MatrixInv_p1_"+str(massbins[i][0])+"_"+str(massbins[i][1])
+        #outfile="Size_of_Unfolding_MatrixInv_Data_p1_"+str(massbins[i][0])+"_"+str(massbins[i][1])
         
-        outfile="Closure_Test_Trivial_p0_"+str(massbins[i][0])+"_"+str(massbins[i][1])
-        #outfile="Pythia_Vs_Herwigg_p1_"+str(massbins[i][0])+"_"+str(massbins[i][1])
-
         #if AK4SF:
         #    outfile=outfile + "_wAK4SF"
         canvas.Print(outfile + ".gif")

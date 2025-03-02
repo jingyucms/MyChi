@@ -26,6 +26,12 @@ outfile=TFile("CovMatrix.root","RECREATE")
 
 matrix=infile.Get("TMatrixT<double>;5")
 
+hist=infile.Get("dijet_mass2_chi1_unfolded;1")
+print hist
+print hist.GetBinContent(1)
+print hist.GetBinError(1)
+print hist.Integral()
+
 #matrix.Print()
 #print matrix.GetNrows()
 
@@ -39,6 +45,8 @@ print "Number of elements in the matrix:",nb
 chibins=[1,2,3,4,5,6,7,8,9,10,12,14,16]
 
 massbins=array.array('d',[2400,3000,3600,4200,4800,5400,6000,13000])
+
+massbins2=array.array('d',[1900,2400,3000,3600,4200,4800,5400,6000,13000])
 
 for ichi in range(len(chibins)-1):
 
@@ -76,13 +84,23 @@ for ichi in range(len(chibins)-1):
     canvas1.SaveAs("corrMatrix_chi_"+str(chibins[ichi])+".pdf")
     h1.Write()
 
+    #print "--- "+str(chibins[ichi])+" TO "+str(chibins[ichi+1])
     for i in range(0,nb):
         for j in range(0,nb):
             if i<3 or j<3: continue
+            #print i-3, j-3, matrix(ichi*11+i,ichi*11+j)
             if matrix(ichi*11+i,ichi*11+j)>=0:
                 h2.SetBinContent(i-3,j-3,matrix(ichi*11+i,ichi*11+j))
             else:
                 h2.SetBinContent(i-3,j-3,matrix(ichi*11+i,ichi*11+j))
+
+    #print "--- "+str(chibins[ichi])+" TO "+str(chibins[ichi+1])
+    for i in range(0,nb):
+        for j in range(0,nb):
+            if i<4 or j<4: continue
+            if j<i: continue
+            Viijj=matrix(ichi*11+i,ichi*11+i)*matrix(ichi*11+j,ichi*11+j)
+            #print str(massbins[i-4])+" TO "+str(massbins[i-3])+" "+str(massbins[j-4])+" TO "+str(massbins[j-3])+": "+str(matrix(ichi*11+i,ichi*11+j)/sqrt(Viijj))
 
     canvas2=TCanvas("mycanvas","",800,800)
     #canvas2.SetLogz()

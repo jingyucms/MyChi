@@ -12,6 +12,7 @@ void ChiNtuple::Loop(){
   cout<<"gaussian:    "<<doGaussian<<endl;
   cout<<"AK4_sf:      "<<doAK4_sf<<endl;
   cout<<"DataToMC_sf: "<<doDataToMC_sf<<endl;
+  cout<<"eraReco:     "<<eraReco<<endl;
   cout<<"SysErr:      "<<doSysErr<<endl;
   cout<<"isData:      "<<IsData<<endl<<endl<<endl;  
 
@@ -40,7 +41,7 @@ void ChiNtuple::Loop(){
   //JetResolution etaResol(etaFileName,doGaussian);
   //JetResolution phiResol(phiFileName,doGaussian);
   //TF1 *fPtResol;  
-  MyJetResponse jetresponse(doAK4_sf,doDataToMC_sf,doSysErr);
+  MyJetResponse jetresponse(doAK4_sf,doDataToMC_sf,eraReco,doSysErr);
   
   jetresponse.GetResolutionParameters(ptFileName,doGaussian);
     
@@ -666,7 +667,7 @@ void ChiNtuple::Loop(){
 	      // fact=SmearFactor(genpt,std::abs(geneta),1.);  // Suvadeep's Gaussian smearing
 
 
-	      fact=jetresponse.doGaussianSmearing(genpt,geneta);
+	      fact=jetresponse.doGaussianSmearing(genpt,geneta,eraReco);
 	      
 	      // if (fact>1.001 && genpt>300.){
 	      // 	fact=.99;
@@ -690,7 +691,7 @@ void ChiNtuple::Loop(){
 		//fPtResol  = ptResol.resolutionEtaPt(geneta,genpt);
 		//fact = fPtResol ->GetRandom();
 
-		fact=jetresponse.doCrystalBallSmearing(genpt,geneta);		
+		fact=jetresponse.doCrystalBallSmearing(genpt,geneta,eraReco);		
 		nloop++;
 		if (nloop>10) break;
 	      }
@@ -745,10 +746,8 @@ void ChiNtuple::Loop(){
 	selectReco=(
 		    (Jet1.Pt()>30) &&
 		    (Jet2.Pt()>30) &&		     
-		    (fabs(Jet1.Rapidity())<2.5) &&
-		    (fabs(Jet2.Rapidity())<2.5) &&
 		    (fabs(Jet1.Rapidity()+Jet2.Rapidity())/2.<1.11) &&
-		    (exp(fabs(Jet1.Rapidity()-Jet2.Rapidity()))<16) &&	  
+		    (exp(fabs(Jet1.Rapidity()-Jet2.Rapidity()))<18) &&	  
 		    (jetAK4_IDTight.at(0)==1) &&
 		    (jetAK4_IDTight.at(1)==1)
 		    );
@@ -820,6 +819,18 @@ void ChiNtuple::Loop(){
 	      }
 	  }
 	  
+// 	} else {
+// 	  std::cout << "Debug Reco "
+// 		    << Jet1.Pt() << " "
+// 		    << Jet2.Pt() << " "
+// 		    << Jet1.Rapidity() << " "
+// 		    << Jet2.Rapidity() << " "
+// 		    << fabs(Jet1.Rapidity()+Jet2.Rapidity())/2. << " "
+// 		    << fabs(Jet1.Rapidity()-Jet2.Rapidity()) << " "
+// 		    << Jet1.Eta() << " "
+// 		    << Jet2.Eta() << " "
+// 		    << fabs(Jet1.Eta()+Jet2.Eta())/2. << " "
+// 		    << fabs(Jet1.Eta()-Jet2.Eta()) << "\n";
 	}
       }
 
@@ -832,11 +843,10 @@ void ChiNtuple::Loop(){
 	selectGen=(
 		   (Jet1.Pt()>30) &&
 		   (Jet2.Pt()>30) &&		     
-		   (fabs(Jet1.Rapidity())<2.5) &&
-		   (fabs(Jet2.Rapidity())<2.5) &&
 		   (fabs(Jet1.Rapidity()+Jet2.Rapidity())/2.<1.11) &&
-		   (exp(fabs(Jet1.Rapidity()-Jet2.Rapidity()))<16)
+		   (exp(fabs(Jet1.Rapidity()-Jet2.Rapidity()))<18)
 		   );
+
 	if (selectGen){
 	  double DijetMass = (Jet1+Jet2).M();
 	  fillHist("dijet_mass_gen",DijetMass,weight);
@@ -863,6 +873,18 @@ void ChiNtuple::Loop(){
                   ghists[j]->Fill(genDijets.chi, weight);
 	      }
 	  }	  
+// 	} else {
+// 	  std::cout << "Debug Gen "
+// 		    << Jet1.Pt() << " "
+// 		    << Jet2.Pt() << " "
+// 		    << Jet1.Rapidity() << " "
+// 		    << Jet2.Rapidity() << " "
+// 		    << fabs(Jet1.Rapidity()+Jet2.Rapidity())/2. << " "
+// 		    << fabs(Jet1.Rapidity()-Jet2.Rapidity()) << " "
+// 		    << Jet1.Eta() << " "
+// 		    << Jet2.Eta() << " "
+// 		    << fabs(Jet1.Eta()+Jet2.Eta())/2. << " "
+// 		    << fabs(Jet1.Eta()-Jet2.Eta()) << "\n";
 	};
 
 	int i1=findLeading(smrjet_pt);
@@ -876,13 +898,12 @@ void ChiNtuple::Loop(){
 	  (smrjet_pt.size()>=2)&&
 	  (smrjet_pt[i1]>30)&&
 	  (smrjet_pt[i2]>30)&&
-	  (fabs(smrjet_rapidity[i1])<2.5)&&
-	  (fabs(smrjet_rapidity[i2])<2.5)&&
 	  (fabs(smrjet_rapidity[i1]+smrjet_rapidity[i2])/2.<1.11)&&
-	  (exp(fabs(smrjet_rapidity[i1]-smrjet_rapidity[i2]))<16);
+	  (exp(fabs(smrjet_rapidity[i1]-smrjet_rapidity[i2]))<18);
 	  
 	  //(smrjet_nConstituents[i1]>1)&&	     
 	  //(smrjet_nConstituents[i2]>1);
+	      //selectSmr = true;
 	if(selectSmr)
 	  {
 	    // fill smrjets
@@ -922,8 +943,100 @@ void ChiNtuple::Loop(){
 		    {
 		      shists[j]->Fill(smrDijets.chi, weight);
 		    }
-	      }	      
+	      }
+	    
 	  }
+
+// 	bool selectReco=false;
+// 	if (njets>1){
+// 
+// 	  TLorentzVector GenJet1,GenJet2;
+// 	  GenJet1.SetPtEtaPhiE(genJetAK4_pt.at(0),genJetAK4_eta.at(0),genJetAK4_phi.at(0),genJetAK4_e.at(0));
+// 	  GenJet2.SetPtEtaPhiE(genJetAK4_pt.at(1),genJetAK4_eta.at(1),genJetAK4_phi.at(1),genJetAK4_e.at(1));
+// 	
+// 	  TLorentzVector Jet1,Jet2;
+// 	  Jet1.SetPtEtaPhiE(jetAK4_pt.at(0),jetAK4_eta.at(0),jetAK4_phi.at(0),jetAK4_e.at(0));
+// 	  Jet2.SetPtEtaPhiE(jetAK4_pt.at(1),jetAK4_eta.at(1),jetAK4_phi.at(1),jetAK4_e.at(1));
+// 	
+// 	  selectReco=(
+// 		      (Jet1.Pt()>30) &&
+// 		      (Jet2.Pt()>30) &&		     
+// 		      (fabs(GenJet1.Rapidity()+GenJet2.Rapidity())/2.<1.11) &&
+// 		      (exp(fabs(GenJet1.Rapidity()-GenJet2.Rapidity()))<18) &&	  
+// 		      (jetAK4_IDTight.at(0)==1) &&
+// 		      (jetAK4_IDTight.at(1)==1)
+// 		      );
+// 	  
+// 	  if (selectReco){	     
+// 	    
+// 	    double DijetMass = (Jet1+Jet2).M();
+// 	    double DijetChi=exp(fabs(Jet1.Rapidity()-Jet2.Rapidity()));
+// 	  
+// 	    recoDijets.dijetFlag=1;
+// 	    recoDijets.mass=DijetMass;
+// 	    recoDijets.pt=(Jet1+Jet2).Pt();
+// 	    recoDijets.chi=exp(fabs(Jet1.Rapidity()-Jet2.Rapidity()));
+// 	    recoDijets.yboost=fabs(Jet1.Rapidity()+Jet2.Rapidity())/2.;
+// 	    recoDijets.pt1= Jet1.Pt();
+// 	    recoDijets.eta1=Jet1.Eta();
+// 	    recoDijets.phi1=Jet1.Phi();
+// 	    recoDijets.e1=  Jet1.Energy();
+// 	    recoDijets.pt2= Jet2.Pt();
+// 	    recoDijets.eta2=Jet2.Eta();
+// 	    recoDijets.phi2=Jet2.Phi();
+// 	    recoDijets.e2=  Jet2.Energy();
+// 
+// 	    double teff(1.);
+// 	    if (WhichTrigger == "PFHT800"){
+// 	      teff=TriggerEff2015(recoDijets.mass,recoDijets.chi);
+// 	    }else if (WhichTrigger == "PFHT900"){
+// 	      teff=TriggerEff2016(recoDijets.mass,recoDijets.chi);
+// 	    }
+// 	    //if (recoDijets.mass>1500)
+// 	    //  std::cout << "%mass/chi/teff: " << recoDijets.mass << "\t" << recoDijets.chi << "\t" << teff << std::endl;
+// 	    double wt=weight/teff;
+// 	    if (!yesTrigger) wt=0.;
+// 
+// 	    fillHist("dijet_mass",DijetMass,weight);
+// 	    if (yesTrigger) fillHist("dijet_mass_trg",DijetMass,weight);
+// 	    fillHist("dijet_mass_trgcorr",DijetMass,wt);
+// 	  
+// 	    if (DijetMass>=massBins1[0] && DijetMass<massBins1[massBins1.size()-1]){
+// 	      dijet_mass1_chi1->Fill(DijetMass,DijetChi, wt);
+// 	      dijet_mass1_chi2->Fill(DijetMass,DijetChi, wt);
+// 	      dijet_mass1_chi3->Fill(DijetMass,DijetChi, wt);
+// 	      dijet_mass1_chi4->Fill(DijetMass,DijetChi, wt);
+// 	    }
+// 
+// 	    if (DijetMass>=massBins2[0] && DijetMass<massBins2[massBins2.size()-1]){
+// 	      
+// 	      dijet_mass2_chi1->Fill(DijetMass,DijetChi, wt);
+// 	      dijet_mass2_chi2->Fill(DijetMass,DijetChi, wt);
+// 	      dijet_mass2_chi3->Fill(DijetMass,DijetChi, wt);
+// 	      dijet_mass2_chi4->Fill(DijetMass,DijetChi, wt);
+// 	    }
+// 	    
+// 	    for ( size_t j = 0; j < (chiBins1.size()-1); ++j )
+// 	      {
+// 
+// 		if((DijetChi>=chiBins1[j])&&
+// 		   (DijetChi<chiBins1[j+1]))
+// 		  {
+// 		    mhists[j]->Fill(DijetMass, wt);
+// 		  }
+// 	      }
+// 	  
+// 	    for ( size_t j = 0; j < (massBins2.size()-1); ++j )
+// 	      {
+// 		if((DijetMass>=massBins2[j])&&
+// 		   (DijetMass<massBins2[j+1]))
+// 		  {
+// 		    hists[j]->Fill(DijetChi, wt);
+// 		  }
+// 	      }
+// 	    
+// 	  }
+// 	}
 	//now check the response
 	for (int genj=0; genj<ngenJets; ++ genj){
 	  if (genj>1)break;
@@ -1005,6 +1118,7 @@ int main(int argc, char* argv[])
   bool DOGAUSSIAN_( ana.getParameter<bool>("DoGaussian") );
   bool AK4_SF_( ana.getParameter<bool>("AK4_SF") );
   bool DATAtoMC_SF_( ana.getParameter<bool>("DATAtoMC_SF") );
+  string EraReco_( ana.getParameter<string>("EraReco") );
   string INPUTFILES_( ana.getParameter<string>("InputFiles") );
   string OUTPUTFILE_( ana.getParameter<string>("OutputFile") );
   string TRIGGER_( ana.getParameter<string>("Trigger") );    
@@ -1018,7 +1132,8 @@ int main(int argc, char* argv[])
   chiNtuple->SetNevents(NEVENTS_);
   chiNtuple->SetDoSysErr(SYSERR_);
   chiNtuple->SetAK4_SF(AK4_SF_);
-  chiNtuple->SetDataToMC_SF(DATAtoMC_SF_);  
+  chiNtuple->SetDataToMC_SF(DATAtoMC_SF_);
+  chiNtuple->SetEraReco(EraReco_); 
   chiNtuple->SetTrigger(TRIGGER_);
   
   cout << "Booking Histograms..." << endl;

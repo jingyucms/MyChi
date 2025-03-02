@@ -122,7 +122,8 @@ int main(int argc, char* argv[])
   double XS_( ana.getParameter<double>("CrossSection") );
   string SMEARING_( ana.getParameter<string>("Smearing") );
   bool doAK4_sf( ana.getParameter<bool>("AK4_SF") );
-  bool doDataToMC_sf( ana.getParameter<bool>("DATAtoMC_SF") );  
+  bool doDataToMC_sf( ana.getParameter<bool>("DATAtoMC_SF") );
+  string eraReco( ana.getParameter<string>("EraReco") );
   double smearMax_( ana.getParameter<double>("SmearMax") );
   bool doSys_( ana.getParameter<bool>("doSys") );
   bool sysPlus_( ana.getParameter<bool>("sysPlus") );
@@ -235,7 +236,8 @@ int main(int argc, char* argv[])
   cout<<"Smearing:      "<<SMEARING_<<endl;
   cout<<"DoSys:         "<<doSys_ << "\tSysPlus: " << sysPlus_<<endl;
   cout<<"AK4_sf:        "<<doAK4_sf<<endl;
-  cout<<"DataToMC_sf:   "<<doDataToMC_sf<<endl<<endl;  
+  cout<<"DataToMC_sf:   "<<doDataToMC_sf<<endl<<endl;
+  cout<<"EraReco:       "<<eraReco<<endl<<endl;  
   cout<<"Cross Section: "<<XS_<<endl<<endl;
 
   
@@ -268,7 +270,7 @@ int main(int argc, char* argv[])
       doSysErr=-1;
     }
   }
-  MyJetResponse jetresponse(doAK4_sf,doDataToMC_sf,doSysErr);  
+  MyJetResponse jetresponse(doAK4_sf,doDataToMC_sf,eraReco,doSysErr);  
   jetresponse.GetResolutionParameters(ptFileName,doGaussian);
   
   // CCLA done with smearing setup
@@ -518,7 +520,7 @@ int main(int argc, char* argv[])
 	      
 		if (SMEARING_ == "Gaussian"){
 		  //fact=SmearFactor(genpt,std::abs(geneta),doSys_,sysPlus_);  // Suvadeep"s Gaussian smearing
-		  fact=jetresponse.doGaussianSmearing(genpt,geneta);
+		  fact=jetresponse.doGaussianSmearing(genpt,geneta,eraReco);
 		  // std::cout <<  genpt << "\t" << geneta << "\t" << fact << std::endl;
 		}else if (SMEARING_ == "CrystalBall"){
 		  fact=10.;
@@ -527,7 +529,7 @@ int main(int argc, char* argv[])
 		  while (fact>smearMax_){
 		    //fPtResol  = ptResol.resolutionEtaPt(geneta,genpt);
 		    //fact = fPtResol ->GetRandom();
-		    fact=jetresponse.doCrystalBallSmearing(genpt,geneta);		    
+		    fact=jetresponse.doCrystalBallSmearing(genpt,geneta,eraReco);		    
 		    nloop++;
 		    if (nloop>10) break;
 		  }

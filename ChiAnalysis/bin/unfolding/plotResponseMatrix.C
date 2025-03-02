@@ -6,7 +6,7 @@
   gStyle->SetOptLogy(1);
   gStyle->SetOptLogx(1);
   gStyle->SetOptLogz(0);
-  gStyle->SetPaintTextFormat("4.5f");
+  gStyle->SetPaintTextFormat("4.3f");
 
   // const Int_t NRGBs = 5;
   // const Int_t NCont = 255;
@@ -20,9 +20,9 @@
   // gStyle->SetNumberContours(NCont);
 
   // TString Sample="pythia8_Pt_170toInf_CB_AK4SF";
-  TString Sample="madgraphMLM_Axial_Dijet_LO_Mphi_6000_1_1p0_1p0_CB_AK4SF";
+  TString Sample="pythia8_Pt_170toInf_CB_AK4SF";
   
-  TFile *_file0 = new TFile("./Response_"+Sample+"_20171012.root");
+  TFile *_file0 = new TFile("./ResponseMatrices/Response_"+Sample+"_20190930.root");
   // TFile *_file0 = new TFile("../ResponseMatrices/Response_Pt_170to13000_CB2_AK4SF_partial.root");
   // TFile *_file0 = new TFile("ResponseMatrices/Response_"+Sample+"_20170130.root");
   

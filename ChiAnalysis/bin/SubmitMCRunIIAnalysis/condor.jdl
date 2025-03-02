@@ -1,0 +1,12 @@
+universe = vanilla
+Executable = run_condor.csh
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT
+Transfer_Input_Files = run_condor.csh
+Output = condorOut/$ENV(GENERATOR)_$ENV(PTBIN)_SMR$ENV(SMRMAX).stdout
+Error = condorOut/$ENV(GENERATOR)_$ENV(PTBIN)_SMR$ENV(SMRMAX).stderr
+Log = condorOut/$ENV(GENERATOR)_$ENV(PTBIN)_SMR$ENV(SMRMAX).log
+x509userproxy = $ENV(X509_USER_PROXY)
+Arguments = chiNtuples_MC_cfg.py
+getenv = True
+Queue 1

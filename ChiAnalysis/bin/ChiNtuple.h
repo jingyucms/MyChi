@@ -113,6 +113,7 @@ public:
   void SetDoSysErr(const int &);
   void SetAK4_SF(const bool &);
   void SetDataToMC_SF(const bool &);
+  void SetEraReco(const string &);
   vector <TLorentzVector> sortJets(const vector<TLorentzVector>);
   int findLeading(const std::vector<double> );
   int findNextLeading(const std::vector<double>, const uint);
@@ -148,6 +149,7 @@ private :
   float SmrMax;
   int   Nevts;
   bool  doGaussian, doAK4_sf, doDataToMC_sf;
+  string eraReco;
   int   doSysErr;
   bool  CheckFirstFile();
   bool  OpenInputFiles();
@@ -318,6 +320,11 @@ void ChiNtuple::SetAK4_SF(const bool & doak4){
   
 }
 
+void ChiNtuple::SetEraReco(const string & erareco){
+  eraReco="2015";
+  eraReco=erareco;
+}
+
 void ChiNtuple::SetDataToMC_SF(const bool & doData){
   doDataToMC_sf=false;
   if (doData)doDataToMC_sf=true;
@@ -431,7 +438,7 @@ void ChiNtuple::BookHistograms(const std::string & fname){
   Float_t mbins1[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,13000};
   Int_t  nmbins1 = sizeof(mbins1)/sizeof(Float_t) - 1;
 
-  Float_t mbins2[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,5400,6000,13000};
+  Float_t mbins2[] = { 1000,1200,1500,1900,2400,3000,3600,4200,4800,5400,6000,7000,13000};
   Int_t  nmbins2 = sizeof(mbins2)/sizeof(Float_t) - 1;
   
   Float_t chibins1[] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};

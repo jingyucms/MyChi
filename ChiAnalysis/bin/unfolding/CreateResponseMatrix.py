@@ -1,29 +1,31 @@
 #!/usr/bin/env python
 
+import ROOT
+#from ROOT import *
+#ROOT.gROOT.SetMacroPath(ROOT.gROOT.GetMacroPath() + ":"+os.getcwd())
 
-import sys,string,math,os
+ROOT.gROOT.LoadMacro('./RooUnfold/libRooUnfold.so')
+ROOT.gROOT.LoadMacro('../NtupleStruct_h.so')
+
+
+import sys,string,os,math
 import argparse
 import glob
 
+#from math import floor
 from array import array
-
+#from RootIOFuncs import *
 # from PhysicsTools.PythonAnalysis import *
-import ROOT
-from ROOT import *
 
-ROOT.gROOT.LoadMacro( "./RooUnfold/libRooUnfold.so" )
-
-
-from ROOT import RooUnfoldResponse
-from ROOT import RooUnfold
-from ROOT import RooUnfoldBayes
+#from ROOT import RooUnfoldResponse
+#from ROOT import RooUnfold
+#from ROOT import RooUnfoldBayes
 
 
 from RootIOFuncs import *
 
 # ROOT.gROOT.SetMacroPath(ROOT.gROOT.GetMacroPath() + ":" + os.path.join(os.environ.get("CMSSW_BASE"),'src/Analysis'))
-ROOT.gROOT.LoadMacro('../NtupleStruct.h+')
-
+#sys.exit()
 
 ### Histogram binning
 nMass=14
@@ -38,8 +40,8 @@ maxChi=16.
 
 
 ## massBins2=[0,1000,1200,1500,1900,2400,3000,3600,4200,8000]
-massBins1=[1000,1200,1500,1900,2400,3000,3600,4200,4800,13000]
-massBins2=[1000,1200,1500,1900,2400,3000,3600,4200,4800,5400,6000,13000]
+massBins1=[1000,1200,1500,1900,2400,3000,3600,4200,4800,5400,6000,13000]
+massBins2=[1000,1200,1500,1900,2400,3000,3600,4200,4800,5400,6000,7000,13000]
 
 
 chiBins1=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
@@ -284,7 +286,7 @@ def BookHistograms():
     hName="dijet_mass2_chi4_GEN"
     hTitle="M_{jj} vs #chi Response -- GEN jets"
     hists[hName] = Book2DwithVarBins(hName,hTitle,massBins2,chiBins4,True)
-
+    
     hName="hdummy_chi"
     hTitle="dummy vs chi"
     hists[hName] = Book1DwithVarBins(hName,hTitle,chiBins1,True)
@@ -474,114 +476,114 @@ def BookRooUnfoldMatrices():
     resp={}
 
     hname="response2dRECO"
-    resp[hname] = RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
+    resp[hname] = ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
     resp[hname].Setup(h["dijet_mass_chi_RECO"],h["dijet_mass_chi_GEN"]);
 
     hname="response2dRECO_m1c1"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
     resp[hname].Setup(h["dijet_mass1_chi1_RECO"],h["dijet_mass1_chi1_GEN"]);
 
     hname="response2dRECO_m1c2"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
     resp[hname].Setup(h["dijet_mass1_chi2_RECO"],h["dijet_mass1_chi2_GEN"]);
 
     hname="response2dRECO_m1c3"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
     resp[hname].Setup(h["dijet_mass1_chi3_RECO"],h["dijet_mass1_chi3_GEN"]);
 
     hname="response2dRECO_m1c4"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
     resp[hname].Setup(h["dijet_mass1_chi4_RECO"],h["dijet_mass1_chi4_GEN"]);
 
     hname="response2dRECO_m2c1"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
     resp[hname].Setup(h["dijet_mass2_chi1_RECO"],h["dijet_mass2_chi1_GEN"]);
 
     hname="response2dRECO_m2c2"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
     resp[hname].Setup(h["dijet_mass2_chi2_RECO"],h["dijet_mass2_chi2_GEN"]);
 
     hname="response2dRECO_m2c3"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
     resp[hname].Setup(h["dijet_mass2_chi3_RECO"],h["dijet_mass2_chi3_GEN"]);
 
     hname="response2dRECO_m2c4"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from RECO jets");
     resp[hname].Setup(h["dijet_mass2_chi4_RECO"],h["dijet_mass2_chi4_GEN"]);
 
 
     hname="response2dSMR"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
     resp[hname].Setup(h["dijet_mass_chi_SMR"],h["dijet_mass_chi_GEN"]);
 
     hname="response2dSMR_m1c1"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
     resp[hname].Setup(h["dijet_mass1_chi1_SMR"],h["dijet_mass1_chi1_GEN"]);
 
     hname="response2dSMR_m1c2"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
     resp[hname].Setup(h["dijet_mass1_chi2_SMR"],h["dijet_mass1_chi2_GEN"]);
 
     hname="response2dSMR_m1c3"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
     resp[hname].Setup(h["dijet_mass1_chi3_SMR"],h["dijet_mass1_chi3_GEN"]);
 
     hname="response2dSMR_m1c4"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
     resp[hname].Setup(h["dijet_mass1_chi4_SMR"],h["dijet_mass1_chi4_GEN"]);
 
     hname="response2dSMR_m2c1"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
     resp[hname].Setup(h["dijet_mass2_chi1_SMR"],h["dijet_mass2_chi1_GEN"]);
 
     hname="response2dSMR_m2c2"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
     resp[hname].Setup(h["dijet_mass2_chi2_SMR"],h["dijet_mass2_chi2_GEN"]);
 
     hname="response2dSMR_m2c3"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
     resp[hname].Setup(h["dijet_mass2_chi3_SMR"],h["dijet_mass2_chi3_GEN"]);
 
     hname="response2dSMR_m2c4"
-    resp[hname]= RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
+    resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass/Chi Response -- from SMEARED jets");
     resp[hname].Setup(h["dijet_mass2_chi4_SMR"],h["dijet_mass2_chi4_GEN"]);
 
     ## now 1d Response matrices in Chi Bins
 
     for i in range(len(chiBins1)-1):
         hname="responseRECO_" + str(chiBins1[i]) + "_chi1_" +  str(chiBins1[i+1])
-        resp[hname]= RooUnfoldResponse (hname,"Mass Response -- RECO jets-- " + str(chiBins1[i]) + "_chi1_" +  str(chiBins1[i+1]))
+        resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass Response -- RECO jets-- " + str(chiBins1[i]) + "_chi1_" +  str(chiBins1[i+1]))
         resp[hname].Setup(h["hdummy_mass2"],h["hdummy_mass2"])
 
         hname="responseSMR_" + str(chiBins1[i]) + "_chi1_" +  str(chiBins1[i+1])
-        resp[hname] = RooUnfoldResponse (hname,"Mass Response -- SMEARED jets-- " + str(chiBins1[i]) + "_chi1_" +  str(chiBins1[i+1]))
+        resp[hname] = ROOT.RooUnfoldResponse (hname,"Mass Response -- SMEARED jets-- " + str(chiBins1[i]) + "_chi1_" +  str(chiBins1[i+1]))
         resp[hname].Setup(h["hdummy_mass2"],h["hdummy_mass2"])
 
     for i in range(len(chiBins2)-1):
         hname="responseRECO_" + str(chiBins2[i]) + "_chi2_" +  str(chiBins2[i+1])
-        resp[hname]= RooUnfoldResponse (hname,"Mass Response -- RECO jets-- " + str(chiBins2[i]) + "_chi2_" +  str(chiBins2[i+1]))
+        resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass Response -- RECO jets-- " + str(chiBins2[i]) + "_chi2_" +  str(chiBins2[i+1]))
         resp[hname].Setup(h["hdummy_mass2"],h["hdummy_mass2"])
 
         hname="responseSMR_" + str(chiBins2[i]) + "_chi2_" +  str(chiBins2[i+1])
-        resp[hname] = RooUnfoldResponse (hname,"Mass Response -- SMEARED jets-- " + str(chiBins2[i]) + "_chi2_" +  str(chiBins2[i+1]))
+        resp[hname] = ROOT.RooUnfoldResponse (hname,"Mass Response -- SMEARED jets-- " + str(chiBins2[i]) + "_chi2_" +  str(chiBins2[i+1]))
         resp[hname].Setup(h["hdummy_mass2"],h["hdummy_mass2"])
 
     for i in range(len(chiBins3)-1):
         hname="responseRECO_" + str(chiBins3[i]) + "_chi3_" +  str(chiBins3[i+1])
-        resp[hname]= RooUnfoldResponse (hname,"Mass Response -- RECO jets-- " + str(chiBins3[i]) + "_chi3_" +  str(chiBins3[i+1]))
+        resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass Response -- RECO jets-- " + str(chiBins3[i]) + "_chi3_" +  str(chiBins3[i+1]))
         resp[hname].Setup(h["hdummy_mass2"],h["hdummy_mass2"])
 
         hname="responseSMR_" + str(chiBins3[i]) + "_chi3_" +  str(chiBins3[i+1])
-        resp[hname] = RooUnfoldResponse (hname,"Mass Response -- SMEARED jets-- " + str(chiBins3[i]) + "_chi3_" +  str(chiBins3[i+1]))
+        resp[hname] = ROOT.RooUnfoldResponse (hname,"Mass Response -- SMEARED jets-- " + str(chiBins3[i]) + "_chi3_" +  str(chiBins3[i+1]))
         resp[hname].Setup(h["hdummy_mass2"],h["hdummy_mass2"])
 
     for i in range(len(chiBins4)-1):
         hname="responseRECO_" + str(chiBins4[i]) + "_chi4_" +  str(chiBins4[i+1])
-        resp[hname]= RooUnfoldResponse (hname,"Mass Response -- RECO jets-- " + str(chiBins4[i]) + "_chi4_" +  str(chiBins4[i+1]))
+        resp[hname]= ROOT.RooUnfoldResponse (hname,"Mass Response -- RECO jets-- " + str(chiBins4[i]) + "_chi4_" +  str(chiBins4[i+1]))
         resp[hname].Setup(h["hdummy_mass2"],h["hdummy_mass2"])
 
         hname="responseSMR_" + str(chiBins4[i]) + "_chi4_" +  str(chiBins4[i+1])
-        resp[hname] = RooUnfoldResponse (hname,"Mass Response -- SMEARED jets-- " + str(chiBins4[i]) + "_chi4_" +  str(chiBins4[i+1]))
+        resp[hname] = ROOT.RooUnfoldResponse (hname,"Mass Response -- SMEARED jets-- " + str(chiBins4[i]) + "_chi4_" +  str(chiBins4[i+1]))
         resp[hname].Setup(h["hdummy_mass2"],h["hdummy_mass2"])
 
 
@@ -704,7 +706,7 @@ def getRootFiles(InputRootFiles,treeName):
 
         f=TFile.Open(rootfile)
         h1=f.Get('nevts')  # get histogram with Step 1 event count
-        print h1.GetEntries()
+        #print h1.GetEntries()
         nStep1 = nStep1 + h1.GetBinContent(1)
 
         h2=f.Get('evtsHT')  # get histogram with number of events per HT bin
@@ -873,16 +875,23 @@ if __name__ == "__main__":
 
     # print infiles
 
-    tree, nStep1 =getRootFiles(InputRootFiles,"DijetTree")
-    h["NStep1"].Fill(0,nStep1)
+    #print h
 
-    recoDijets   = ROOT.DijetInfo()
+    tree, nStep1 =getRootFiles(InputRootFiles,"DijetTree")
+
+    NEntries = tree.GetEntries()
+    
+    recoDijets  = ROOT.DijetInfo()
     genDijets   = ROOT.DijetInfo()
     smrDijets   = ROOT.DijetInfo()
 
-    tree.SetBranchAddress("recoDijets", AddressOf(recoDijets, "dijetFlag") );
-    tree.SetBranchAddress("genDijets",  AddressOf(genDijets,  "dijetFlag") );
-    tree.SetBranchAddress("smrDijets",  AddressOf(smrDijets,  "dijetFlag") );
+    tree.SetBranchAddress("recoDijets", ROOT.AddressOf(recoDijets, "dijetFlag") );
+    tree.SetBranchAddress("genDijets",  ROOT.AddressOf(genDijets,  "dijetFlag") );
+    tree.SetBranchAddress("smrDijets",  ROOT.AddressOf(smrDijets,  "dijetFlag") );
+
+    #print genDijets
+
+    h["NStep1"].Fill(0,nStep1)
 
 
     nHT=0
@@ -910,8 +919,7 @@ if __name__ == "__main__":
         nFLAT= nFLAT+ h["EvtsFLAT"].GetBinContent(i+1)
     print "Number of Flat QCD events: ",nFLAT
 
-
-    NEntries = tree.GetEntries()
+    
     print "Number of entries on Tree:",NEntries
     nevt=NEntries
     if args.nevts>0:
@@ -926,12 +934,13 @@ if __name__ == "__main__":
     oFlatBin=-100
 
     oweight=-1.
+    nmess_1=0
+    nmess_max=100
+    
     nevtM=0
     nevtHT=0
     nevtPT=0
     nevtFLAT=0
-    nmess_1=0
-    nmess_max=100
 
     for jentry in xrange( nevt ):
 
@@ -942,8 +951,7 @@ if __name__ == "__main__":
             else:
                 if jentry % 2 != 0:
                     continue
-
-        #print jentry
+                
         tree.GetEntry(jentry)
 
         progress = 10.0*jentry/(1.0*nevt);
@@ -977,10 +985,10 @@ if __name__ == "__main__":
                     nevtFLAT=h["EvtsFLAT"].GetBinContent(oFlatBin+2)
                     print "%%%Number of Events in Flat QCD: ", oFlatBin," ",nevtFLAT
         else:
-            nevtHT=nevt
-            nevtPT=nevt
-            nevtM =nevt
-            nevtFLAT=nevt
+            nevtHT=evt
+            nevtPT=evt
+            nevtM =evt
+            nevtFLAT=evt
 
         isFlatQCD=False
         if abs(tree.XSweight-1.)>0.0001:
@@ -1002,10 +1010,10 @@ if __name__ == "__main__":
         if (oweight != weight):
             oweight=weight
             nmess_1=nmess_1+1
-            if nmess_1<nmess_max:
-                print "XS weight updated. New value: ",jentry,oweight,weight,tree.XSweight,nevtPT,nevtM,nevtHT,nevtFLAT
-            elif nmess_1==nmess_max:
-                print "\tReached XS weight update printout maximum. No more messages of this type will be printed\n"
+            #if nmess_1<nmess_max:
+            #    print "XS weight updated. New value: ",jentry,oweight,weight,tree.XSweight,nevtPT,nevtM,nevtHT,nevtFLAT
+            #elif nmess_1==nmess_max:
+            #    print "\tReached XS weight update printout maximum. No more messages of this type will be printed\n"
 
         if abs(tree.EVTweight-1.)>0.0001:
             weight=weight*tree.EVTweight
@@ -1014,18 +1022,18 @@ if __name__ == "__main__":
         h["Counter"].Fill(0.)
         h["Counter"].Fill(1.,weight)
 
-        Jet1R=TLorentzVector()
-        Jet2R=TLorentzVector()
+        Jet1R=ROOT.TLorentzVector()
+        Jet2R=ROOT.TLorentzVector()
         Jet1R.SetPtEtaPhiE(recoDijets.pt1,recoDijets.eta1,recoDijets.phi1,recoDijets.e1)
         Jet2R.SetPtEtaPhiE(recoDijets.pt2,recoDijets.eta2,recoDijets.phi2,recoDijets.e2)
 
-        Jet1G=TLorentzVector()
-        Jet2G=TLorentzVector()
+        Jet1G=ROOT.TLorentzVector()
+        Jet2G=ROOT.TLorentzVector()
         Jet1G.SetPtEtaPhiE(genDijets.pt1,genDijets.eta1,genDijets.phi1,genDijets.e1)
         Jet2G.SetPtEtaPhiE(genDijets.pt2,genDijets.eta2,genDijets.phi2,genDijets.e2)
 
-        Jet1S=TLorentzVector()
-        Jet2S=TLorentzVector()
+        Jet1S=ROOT.TLorentzVector()
+        Jet2S=ROOT.TLorentzVector()
         Jet1S.SetPtEtaPhiE(smrDijets.pt1,smrDijets.eta1,smrDijets.phi1,smrDijets.e1)
         Jet2S.SetPtEtaPhiE(smrDijets.pt2,smrDijets.eta2,smrDijets.phi2,smrDijets.e2)
 

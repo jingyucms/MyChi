@@ -17,15 +17,15 @@ from myPyRootMacros import *
 from scripts import plotComparison, doPoisson, getMassBins, compAndDrawIt,reBin
 #===============================================================
 
-#doMC=True
-doMC=False
+doMC=True
+#doMC=False
 CheckProj=False
 #CheckProj=True
 
 #PlotUnfolded=False
 PlotUnfolded=True
-PlotUnfoldedAndFit=False  # make ratio histogram and fit the ratio (aka fit to get uncertainty)
-#PlotUnfoldedAndFit=True
+#PlotUnfoldedAndFit=False  # make ratio histogram and fit the ratio (aka fit to get uncertainty)
+PlotUnfoldedAndFit=True
 
 compToGen=False  # compare Unfolded SMR MC to Gen MC, use when do closure test
 #compToGen=True
@@ -75,18 +75,18 @@ if __name__ == '__main__':
     #dataFile="/uscms_data/d3/jingyu/ChiAnalysis/jetUnfold/CMSSW_8_0_23/src/MyChi/ChiAnalysis/bin/unfolding/ResponseMatrices/chiNtuple_data_PFHT900_v2.root"
     dataFile="root://cmseos.fnal.gov//store/user/jingyu/jetUnfold/DataNtuple/chiNtuple_dataReReco_v3_PFHT900.root"
 
-    responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
+    #responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
     #responseFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20161214.root"
     #responseFile="../ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +"_Train.root"
-    #responseFile="ResponseMatrices/Response_pythia8_Pt_170toInf_CB_AK4SF_Test_20161214_Test.root"
+    responseFile="ResponseMatrices/Response_pythia8_Pt_170toInf_CB_AK4SF_Test_20161214_Test.root"
     
     if doMC:
         #dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20161214.root"
         #dataFile="ResponseMatrices/Response_pythia8_Pt_170toInf_CB_AK4SF_20161202.root"
         #dataFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
         #dataFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_Test_" +date +"_Test.root"
-        #responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_Train_" +date +"_Train.root"
-        dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20170206.root"
+        responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_Train_" +date +"_Train.root"
+        #dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20170206.root"
         #dataFile="ResponseMatrices/Response_herwigpp_Pt_170toInf_CB_AK4SF_20170201.root"
     ## get 2D reco hist to be Unfolded
     if doMC:

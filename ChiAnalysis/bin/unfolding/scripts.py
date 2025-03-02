@@ -128,7 +128,7 @@ def plotComparison(hists1,hists2,WhichCheck,plotRat=False,isMC=False):
         h2.Draw("same")
 
         if drawLegend:
-            DrawText(0.14,0.2,h1Min + " < M_{jj} < " + h1Max,0.04)
+            DrawText(0.14,0.6,h1Min + " < M_{jj} < " + h1Max,0.04)
             xl1=.6; yl1=0.2; xl2=xl1+.28; yl2=yl1+.15;
             leg =TLegend(xl1,yl1,xl2,yl2);
             leg.SetFillColor(0);
@@ -180,7 +180,8 @@ def compAndDrawIt(hists1,hists2):
     #h2=rebinAndNormalize(h2)
     #h3=rebinAndNormalize(h3)
 
-    massbins=[[2400,3000],[3000,3600],[3600,4200],[4200,4800],[4800,5400],[5400,6000],[6000,13000]]
+    #massbins=[[2400,3000],[3000,3600],[3600,4200],[4200,4800],[4800,5400],[5400,6000],[6000,13000]]
+    massbins=[[6000,13000]]
     
     if len(hists1)!=len(hists2):
         print "Something is Wrong. ---Existing"
@@ -245,7 +246,7 @@ def compAndDrawIt(hists1,hists2):
         h1.Draw("same")
         #h3.Draw("same")
 
-        xl1=.35; yl1=0.25; xl2=xl1+.28; yl2=yl1+.25;
+        xl1=.35; yl1=0.6; xl2=xl1+.28; yl2=yl1+.25;
         leg =TLegend(xl1,yl1,xl2,yl2,str(massbins[i][0])+" < m_{jj} < "+str(massbins[i][1]));
         #leg =TLegend(xl1,yl1,xl2,yl2," < m_{jj} < ")
         leg.SetFillColor(0);
@@ -253,10 +254,10 @@ def compAndDrawIt(hists1,hists2):
         leg.SetShadowColor(0);
         leg.SetTextSize(0.038)
 
-        leg.AddEntry(h1,"Smeared Generated","lp");
-        #leg.AddEntry(h1,"Data","lp");
-        leg.AddEntry(h2,"Unfolded MC","lp");
-        #leg.AddEntry(h2,"Unfolded Data","lp");
+        #leg.AddEntry(h1,"Smeared Generated","lp");
+        leg.AddEntry(h1,"Data","lp");
+        #leg.AddEntry(h2,"Unfolded MC","lp");
+        leg.AddEntry(h2,"Unfolded Data","lp");
         #if "CB2" in filename:
         #    leg.AddEntry(h3,"Crystal Ball Smeared","lp");
         #else:
@@ -273,8 +274,8 @@ def compAndDrawIt(hists1,hists2):
         pad2.cd()
 
         h2divide.SetMinimum(0.8)
-        if str(massbins[i][0])=="6000":
-            h2divide.SetMinimum(0.5)
+        #if str(massbins[i][0])=="6000":
+        h2divide.SetMinimum(0.5)
         h2divide.SetMaximum(1.2)
         h2divide.GetXaxis().SetLabelSize(0.08)
         h2divide.GetXaxis().SetTitleSize(0.09)
@@ -308,9 +309,9 @@ def compAndDrawIt(hists1,hists2):
         #else:
         #outfile="Pythia_Test_"+str(massbins[i][0])+"_"+str(massbins[i][1])
         #outfile="Closure_Test_Trivial_p0_"+str(massbins[i][0])+"_"+str(massbins[i][1])
-        outfile="Pythia_Vs_MadGraph_MatrixInv_p1_"+str(massbins[i][0])+"_"+str(massbins[i][1])
+        #outfile="Pythia_Vs_MadGraph_MatrixInv_p1_"+str(massbins[i][0])+"_"+str(massbins[i][1])
         #outfile="Size_of_Unfolding_MatrixInv_p1_"+str(massbins[i][0])+"_"+str(massbins[i][1])
-        #outfile="Size_of_Unfolding_MatrixInv_Data_p1_"+str(massbins[i][0])+"_"+str(massbins[i][1])
+        outfile="Size_of_Unfolding_MatrixInv_Data_p1_"+str(massbins[i][0])+"_"+str(massbins[i][1])
         
         #if AK4SF:
         #    outfile=outfile + "_wAK4SF"

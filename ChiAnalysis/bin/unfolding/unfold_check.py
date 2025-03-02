@@ -48,8 +48,9 @@ if __name__ == '__main__':
     gStyle.SetOptFit(0001)
     gROOT.ForceStyle()
 
-    MCSAMPLE="pythia8_Pt_170toInf"; date="20170130"
+    #MCSAMPLE="pythia8_Pt_170toInf"; date="20170130"
     #MCSAMPLE="madgraphMLM_HT_300toInf"; date="20161214"
+    MCSAMPLE="pythia8_Pt_170toInf"; date="20190930"
 
     WhichSmearing="Smeared"  ## unsmearing matrix derived from Smeared jets
 
@@ -74,14 +75,7 @@ if __name__ == '__main__':
     responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
     #responseFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20161214.root"
     #responseFile="../ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +"_Train.root"
-    #responseFile="ResponseMatrices/Response_pythia8_Pt_170toInf_CB_AK4SF_Test_20161214_Test.root"
-    
-    
-
-    Reco2d_Chi1=Get2DHist(dataFile,"dijet_mass2_chi1")
-    Reco2d_Chi2=Get2DHist(dataFile,"dijet_mass2_chi2")
-    Reco2d_Chi3=Get2DHist(dataFile,"dijet_mass2_chi3")
-    Reco2d_Chi4=Get2DHist(dataFile,"dijet_mass2_chi4")        
+    #responseFile="ResponseMatrices/Response_pythia8_Pt_170toInf_CB_AK4SF_Test_20161214_Test.root"  
 
     
     ## get the Response matrix
@@ -105,13 +99,18 @@ if __name__ == '__main__':
 
     Response2.Print()
 
-    responseOut=TFile("responseMatrices.root","RECREATE")
+    responseOut=TFile("responseMatrices_20190930.root","RECREATE")
     Response1.Write()
     Response2.Write()
     Response3.Write()
     Response4.Write()
 
     sys.exit()
+
+    Reco2d_Chi1=Get2DHist(dataFile,"dijet_mass2_chi1")
+    Reco2d_Chi2=Get2DHist(dataFile,"dijet_mass2_chi2")
+    Reco2d_Chi3=Get2DHist(dataFile,"dijet_mass2_chi3")
+    Reco2d_Chi4=Get2DHist(dataFile,"dijet_mass2_chi4")      
     
     print "============================================="
     singular1=TDecompSVD(Response1)

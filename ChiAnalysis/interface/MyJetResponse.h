@@ -41,9 +41,9 @@ double fnc_dscb(double*xx,double*pp)
 
 class MyJetResponse {
  public:
- MyJetResponse(bool AK4_SF=false, bool DATAtoMC_SF=false, int SYSUNC=0) : ak4_sf(AK4_SF), datamc_sf(DATAtoMC_SF), sysunc(SYSUNC) {}
+  MyJetResponse(bool AK4_SF=false, bool DATAtoMC_SF=false, string EraReco="2015", int SYSUNC=0) : ak4_sf(AK4_SF), datamc_sf(DATAtoMC_SF), erareco(EraReco), sysunc(SYSUNC) {}
   
-  double doGaussianSmearing(double pt,double eta){
+  double doGaussianSmearing(double pt,double eta, string erareco){
 
     double fact;
   
@@ -59,12 +59,12 @@ class MyJetResponse {
     //std::cout << "Sigma: "<< sigma << std::endl;
 
     if (ak4_sf) sigma=sigma*ak4_scalefact(x,e);
-    if (datamc_sf) sigma=sigma*DataToMC_scalefact(e);
+    if (datamc_sf) sigma=sigma*DataToMC_scalefact(e, erareco);
 
     // if (sysunc == 1) sigma  = sigma*(1 + 0.1);
     // if (sysunc == -1) sigma = sigma*(1 - 0.1);
-    if (sysunc == 1) sigma  = sigma*(1 + DataToMC_scalefactorUncert(e));
-    if (sysunc == -1) sigma = sigma*(1 - DataToMC_scalefactorUncert(e));
+    if (sysunc == 1) sigma  = sigma*(1 + DataToMC_scalefactorUncert(e, erareco));
+    if (sysunc == -1) sigma = sigma*(1 - DataToMC_scalefactorUncert(e, erareco));
     
     double r = rnd.Gaus(mean,sigma);
   
@@ -80,7 +80,7 @@ class MyJetResponse {
     return fact;
   }
 
-  double doCrystalBallSmearing(double pt,double eta){
+  double doCrystalBallSmearing(double pt,double eta,string erareco){
 
     double fact;
     //double smf_e=1.;
@@ -113,13 +113,19 @@ class MyJetResponse {
 
     // std::cout << sigma << "\t" << sf << "\t" << sf << "\t" << sf << "\t" << sf << "\t" << sf << std::cout;
     
-    if (ak4_sf) sigma=sigma*ak4_scalefact(x,e);    
-    if (datamc_sf) sigma=sigma*DataToMC_scalefact(e);
+    if (ak4_sf) sigma=sigma*ak4_scalefact(x,e);
+    //std::cout << e << " | "
+    //<< sigma << " | "
+    //	      << DataToMC_scalefact(e, erareco) << "\n";
+    if (datamc_sf) {
+      sigma=sigma*DataToMC_scalefact(e, erareco);
+      //std::cout << sigma << "\n";
+    }
 
     // if (sysunc == 1) sigma  = sigma*(1 + 0.1);
     // if (sysunc == -1) sigma = sigma*(1 - 0.1);
-    if (sysunc == 1) sigma  = sigma*(1 + DataToMC_scalefactorUncert(e));
-    if (sysunc == -1) sigma = sigma*(1 - DataToMC_scalefactorUncert(e));
+    if (sysunc == 1) sigma  = sigma*(1 + DataToMC_scalefactorUncert(e, erareco));
+    if (sysunc == -1) sigma = sigma*(1 - DataToMC_scalefactorUncert(e, erareco));
     
     TF1 *f1 = new TF1("f1",fnc_dscb,0.,5.,7);
     f1->SetParameter(0,1.);
@@ -136,6 +142,7 @@ class MyJetResponse {
   
     //fact=r/mean;
     fact=r;
+    //std::cout << fact << "\n";
     return fact;
   }
   
@@ -271,6 +278,7 @@ class MyJetResponse {
  private:
   TRandom rnd;
   bool ak4_sf, datamc_sf;
+  string erareco;
   int sysunc;
   std::vector<double> etaMinBins_Sigmas, etaMaxBins_Sigmas;
   std::vector<double> etaMinBins_Aones, etaMaxBins_Aones;
@@ -386,11 +394,124 @@ class MyJetResponse {
 //   }  
 // 
   // new scale factors for 80x
-  double DataToMC_scalefact(double xx){
+  double DataToMC_scalefact(double xx, string erareco){
     double fact(1.);
 
     double eta=fabs(xx);
-
+    /*
+    if (erareco=="2016v3") {
+      if (eta < 0.5) {
+	fact=1.109;
+      }
+      else if (eta < 0.8) {
+	fact=1.138;
+      }
+      else if (eta < 1.1) {
+	fact=1.114;
+      }
+      else if (eta < 1.3) {
+	fact=1.123;
+      }
+      else if (eta < 1.7) {
+	fact=1.084;
+      }
+      else if (eta < 1.9) {
+	fact=1.082;
+      }
+      else if (eta < 2.05) {
+	fact=1.140;
+      }
+      else if (eta < 2.3) {
+	fact=1.067;
+      }
+      else if (eta < 2.5) {
+	fact=1.177;
+      }
+    } else if (erareco=="2017") {
+      if (eta < 0.5) {
+	fact=1.1432;
+      }
+      else if (eta < 0.8) {
+	fact=1.1815;
+      }
+      else if (eta < 1.1) {
+	fact=1.0989;
+      }
+      else if (eta < 1.3) {
+	fact=1.1137;
+      }
+      else if (eta < 1.7) {
+	fact=1.1307;
+      }
+      else if (eta < 1.9) {
+	fact=1.1600;
+      }
+      else if (eta < 2.05) {
+	fact=1.2393;
+      }
+      else if (eta < 2.3) {
+	fact=1.2604;
+      }
+      else if (eta < 2.5) {
+	fact=1.4085;
+      }
+    } else if (erareco=="2018") {
+      if (eta < 0.5) {
+	fact=1.1639;
+      }
+      else if (eta < 0.8) {
+	fact=1.1808;
+      }
+      else if (eta < 1.1) {
+	fact=1.134;
+      }
+      else if (eta < 1.3) {
+	fact=1.1491;
+      }
+      else if (eta < 1.7) {
+	fact=1.1432;
+      }
+      else if (eta < 1.9) {
+	fact=1.1175;
+      }
+      else if (eta < 2.05) {
+	fact=1.1388;
+      }
+      else if (eta < 2.3) {
+	fact=1.1827;
+      }
+      else if (eta < 2.5) {
+	fact=1.3;
+      }
+    } else {
+      if (eta < 0.5) {
+	fact=1.122;
+      }
+      else if (eta < 0.8) {
+	fact=1.167;
+      }
+      else if (eta < 1.1) {
+	fact=1.168;
+      }
+      else if (eta < 1.3) {
+	fact=1.029;
+      }
+      else if (eta < 1.7) {
+	fact=1.115;
+      }
+      else if (eta < 1.9) {
+	fact=1.041;
+      }
+      else if (eta < 2.1) {
+	fact=1.167;
+      }
+      else if (eta < 2.3) {
+	fact=1.094;
+      }
+      else if (eta < 2.5) {
+	fact=1.168;
+      }
+    */
     if (eta < 0.5) {
       fact=1.109;
     }
@@ -422,7 +543,7 @@ class MyJetResponse {
     return fact;
   }
 
-  double DataToMC_scalefactorUncert(double xx){
+  double DataToMC_scalefactorUncert(double xx, string erareco){
     double fact(1.);
 
     double eta=fabs(xx);

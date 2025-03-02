@@ -17,7 +17,6 @@ from myPyRootMacros import *
 from scripts import plotComparison, doPoisson, getMassBins, compAndDrawIt,reBin
 #===============================================================
 
-
 #doMC=True
 doMC=False
 
@@ -26,7 +25,6 @@ CheckProj=False
 
 #PlotUnfolded=False
 PlotUnfolded=True
-
 PlotUnfoldedAndFit=False  # make ratio histogram and fit the ratio (aka fit to get uncertainty)
 #PlotUnfoldedAndFit=True
 
@@ -79,10 +77,10 @@ if __name__ == '__main__':
 
     dataFile="root://cmseos.fnal.gov//store/user/jingyu/jetUnfold/DataNtuple/chiNtuple_dataReReco_v3_PFHT900.root"
 
-    responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
+    #responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
     #responseFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20161214.root"
     #responseFile="../ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +"_Train.root"
-    #responseFile="ResponseMatrices/Response_pythia8_Pt_170toInf_CB_AK4SF_Test_20161214_Test.root"
+    responseFile="ResponseMatrices/Response_pythia8_Pt_170toInf_CB_AK4SF_Test_20161214_Test.root"
     
     if doMC:
         #dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20161214.root"
@@ -90,8 +88,8 @@ if __name__ == '__main__':
 
         #dataFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_" +date +".root"
         #dataFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_Test_" +date +"_Test.root"
-        #responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_Train_" +date +"_Train.root"
-        dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20170206.root"
+        responseFile="ResponseMatrices/Response_"+MCSAMPLE+"_" +smearFunc + "_Train_" +date +"_Train.root"
+        #dataFile="ResponseMatrices/Response_madgraphMLM_HT_300toInf_CB_AK4SF_20170206.root"
         #dataFile="ResponseMatrices/Response_herwigpp_Pt_170toInf_CB_AK4SF_20170201.root"
 
     ## get 2D reco hist to be Unfolded

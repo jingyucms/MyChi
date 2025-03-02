@@ -9,8 +9,8 @@ myTrigger="PFHT900";
 
 jobIndex=os.environ['JOBNUM']
 
-ntuples="filelists/PromptData2016/ntuples_"+jobIndex+".list"
-output="hsts/chiNtuple_"+myTrigger+"_"+jobIndex+".root"
+ntuples="filelists/ReRecoData2016v3/ntuples_"+jobIndex+".list"
+output="/afs/cern.ch/work/z/zhangj/private/jetUnfold/data/hstsData_vReReco_v3/chiNtuple_"+myTrigger+"_"+jobIndex+".root"
 
 process = cms.PSet()
 process.chiNtuples = cms.PSet(

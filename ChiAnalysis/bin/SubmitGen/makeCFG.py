@@ -73,6 +73,7 @@ if __name__ == '__main__':
 
     fd.write("process.GenChiAnalysis = cms.PSet(\n")
     fd.write("    GenJets = cms.InputTag(\'ak4GenJets\'),\n")
+    #fd.write("    GenJets = cms.InputTag(\'slimmedGenJets\'),\n")
     fd.write("    Smearing = cms.string(\""+SMEARING+"\"),\n")
     fd.write("    AK4_SF = cms.bool("+doAK4_sf+"),\n")
     fd.write("    DATAtoMC_SF = cms.bool("+doDataToMC_sf+"),\n")
